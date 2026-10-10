@@ -4,8 +4,6 @@
 // Handle selection of a color from anywhere on the display.
 // Currently this code has no dependency on the rest of the codebase.
 
-// TODO: More comments
-
 #ifndef cosel_qt_screen_picker_h
 #define cosel_qt_screen_picker_h
 

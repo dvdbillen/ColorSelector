@@ -572,7 +572,6 @@ struct dci_p3_colorspace_24 {
 // Currently the only method of changing the color space either for compile time or run time is to
 // modify this definition.
 
-// TODO: THIS IS NOT THE CORRECT DEFAULT FOR RELEASE
 using color_space = srgb_colorspace;
 
 
