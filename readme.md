@@ -1,8 +1,6 @@
-\# Cosel
+# Cosel
 
-
-
-> \*\*Status: Early / WIP\*\*  
+> **Status: Early / WIP**  
 
 > This project is functional but not yet ready for general use.  
 
@@ -12,9 +10,7 @@
 
 
 
-\## Overview
-
-
+## Overview
 
 Cosel is a set of color selection classes for Qt that can be used independently, within a customizable widget, or as a drop-in replacement for `QColorDialog`.
 
@@ -24,39 +20,35 @@ Cosel is color-science aware, allowing for greater functionality than purely RGB
 
 
 
-\## Dependencies
+## Dependencies
+
+- Qt 6.x
+
+- C++17 or higher
 
 
 
-\- Qt 6.x
+## Features
 
-\- C++17 or higher
+- All `QColorDialog` features (screen picker, custom palette, HTML entry, etc.)
 
+- Stand-alone components or full `QColorDialog` replacement
 
+- Sliders with dynamic gradients
 
-\## Features
+- Perceptually uniform hue selection
 
+- Customizable look (corner rounding, slider thickness, pointer orientation, etc.)
 
+- RGB, HSV, and HSL slider tabs (all optional)
 
-\- All `QColorDialog` features (screen picker, custom palette, HTML entry, etc.)
+- Unique HSL+ and HSV+ slider tabs (optional)
 
-\- Stand-alone components or full `QColorDialog` replacement
+- 2D HSV ring selector (optional)
 
-\- Sliders with dynamic gradients
+- 2D HSV+ color grid selector (optional)
 
-\- Perceptually uniform hue selection
-
-\- Customizable look (corner rounding, slider thickness, pointer orientation, etc.)
-
-\- RGB, HSV, and HSL slider tabs (all optional)
-
-\- Unique HSL+ and HSV+ slider tabs (optional)
-
-\- 2D HSV ring selector (optional)
-
-\- 2D HSV+ color grid selector (optional)
-
-\- Drag-and-drop support for custom palettes, etc.
+- Drag-and-drop support for custom palettes, etc.
 
 
 
