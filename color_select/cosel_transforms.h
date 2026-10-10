@@ -1,0 +1,247 @@
+// SPDX-License-Identifier: MIT
+// Copyright (c) 2026 David Billen
+
+// Color space transforms
+
+#ifndef cosel_transforms_h
+#define cosel_transforms_h
+
+#include <cmath>
+
+#include "cosel_math.h"
+#include "cosel_triplet.h"
+
+namespace cosel {
+
+namespace konst {
+// These are CIE standard but do not work as well as...
+// e = 0.008856
+// k = 903.3
+// ...these from source: http://www.brucelindbloom.com/index.html?Math.html
+constexpr double e_ = 216.0 / 24389;
+constexpr double k_ = 24389.0/27;
+constexpr double kr_= 1/k_;
+}
+
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+// XYZ to LAB
+[[nodiscard]] static inline triplet xyz_to_lab(const triplet& xyz, const triplet& white) noexcept {
+    auto X = xyz.comp[0]/white.comp[0];
+    auto Y = xyz.comp[1]/white.comp[1];
+    auto Z = xyz.comp[2]/white.comp[2];
+
+    if(X > 0.008856) {
+        X = std::pow(X, 1.0/3);
+    } else {
+        X = X*double(7.787) + double(16)/116;
+    }
+
+    if(Y > 0.008856) {
+        Y = std::pow(Y, 1.0/3);
+    } else {
+        Y = Y*double(7.787) + double(16.0)/116;
+    }
+
+    if(Z > 0.008856) {
+        Z = std::pow(Z, 1.0 / 3);
+    } else {
+        Z = Z*7.787 + 16.0/116;
+    }
+
+    return triplet{Y*116 - 16, (X - Y)*500, (Y - Z)*200};
+}
+
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+// LAB TO XYZ
+[[nodiscard]] static inline triplet lab_to_xyz(const triplet& lab, const triplet& white) noexcept {
+    const auto L = lab.comp[0];
+    const auto a = lab.comp[1];
+    const auto b = lab.comp[2];
+
+    const auto fy = (L + 16)*(1.0/116);
+    const auto fx = a*(1.0/500) + fy;
+    const auto fz = fy - b*(1.0/200);
+
+    auto X = fx*fx*fx;
+
+    if(X <= konst::e_) {
+        X = (fx*116 - 16)*konst::kr_;
+    }
+
+    auto Y = fy*fy*fy;
+
+    if(L <= konst::k_*konst::e_) {
+        Y = L*konst::kr_;
+    }
+
+    auto Z = fz*fz*fz;
+
+    if(Z <= konst::e_) {
+        Z = (fz*116 - 16)*konst::kr_;
+    }
+
+    return triplet{X, Y, Z}*white;
+}
+
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+// XYZ TO LUV
+[[nodiscard]] static inline triplet xyz_to_luv(const triplet& xyz, const triplet& white) noexcept {
+    const auto X = xyz.comp[0];
+    const auto Y = xyz.comp[1];
+    const auto Z = xyz.comp[2];
+
+    if(X <= 0 && Y <= 0 && Z <= 0) {
+        return triplet{0, 0, 0};
+    }
+
+    const auto ur_ = (4*white.comp[0])/(white.comp[0] + 15*white.comp[1] + 3*white.comp[2]);
+    const auto vr_ = (9*white.comp[1])/(white.comp[0] + 15*white.comp[1] + 3*white.comp[2]);
+    const auto yr_ = Y/white.comp[1];
+
+    const auto u_ = (4*X)/(X + 15*Y + 3*Z);
+    const auto v_ = (9*Y)/(X + 15*Y + 3*Z);
+    const auto L = (yr_ > konst::e_)? (116*std::pow(yr_, (1.0/3)) - 16):(konst::k_*yr_);
+    const auto u = 13*L*(u_ - ur_);
+    const auto v = 13*L*(v_ - vr_);
+    return triplet{L, u, v};
+}
+
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+// LUV TO XYZ
+[[nodiscard]] static inline triplet luv_to_xyz(const triplet& luv, const triplet& white) noexcept {
+    if(luv.comp[0] < zero_epsilon) {
+        return triplet{0, 0, 0};
+    }
+
+    const auto L = luv.comp[0];
+    const auto u = luv.comp[1];
+    const auto v = luv.comp[2];
+
+    const double u0 = (4*white.comp[0])/(white.comp[0] + 15*white.comp[1] + 3*white.comp[2]);
+    const double v0 = (9*white.comp[1])/(white.comp[0] + 15*white.comp[1] + 3*white.comp[2]);
+
+    auto Y = (L + 16)/116;
+    Y = (L > konst::k_*konst::e_)? (Y*Y*Y): (L/konst::k_);
+
+    const auto A = (1.0/3)*((52*L)/(u + 13*L*u0) - 1);
+    const auto B = -5*Y;
+    constexpr auto C = -(1.0/3);
+    const auto D = Y*((39*L)/(v + 13*L*v0) - 5);
+    const auto X = (D - B)/(A - C);
+    const auto Z = X*A + B;
+
+    return triplet{X, Y, Z};
+}
+
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+// XYZ white point transform
+[[nodiscard]] static inline triplet chromatic_adapt(
+    const triplet& xyz, const triplet& src_white, const triplet& dst_white) noexcept {
+    constexpr double to_cone[3][3] = {
+        { 0.8951,  0.2664, -0.1614},
+        {-0.7502,  1.7135,  0.0367},
+        { 0.0389, -0.0685,  1.0296}
+    };
+
+    constexpr double from_cone[3][3] = {
+        {0.9869929, -0.1470543,  0.1599627},
+        {0.4323053,  0.5183603,  0.0492912},
+        {-0.0085287, 0.0400428,  0.9684867}
+    };
+
+    const auto cone_src = src_white.mat3_mul(to_cone);
+    const auto cone_dst = dst_white.mat3_mul(to_cone);
+    const auto cone = xyz.mat3_mul(to_cone);
+    const auto cone_adapted = cone_dst/cone_src*cone;
+    return cone_adapted.mat3_mul(from_cone);
+}
+
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+// RGB to okLAB
+
+inline triplet xyz_to_oklab(const triplet& xyz, const triplet& white, bool white_is_d65) noexcept {
+
+    triplet d65;
+
+    // The white point must be converted if colorspace isn't d65
+
+    if(!white_is_d65) {
+        constexpr triplet d65_white(0.95047, 1.0, 1.08883);
+        d65 = chromatic_adapt(xyz, white, d65_white);
+    } else {
+        d65 = xyz;
+    }
+
+    // xyz to lms
+
+    constexpr double to_lms[3][3] = {
+        {0.8189330101, 0.3618667424, -0.1288597137},
+        {0.0329845436, 0.9293118715, 0.0361456387},
+        {0.0482003018, 0.2643662691, 0.6338517070}
+    };
+    auto lms = d65.mat3_mul(to_lms);
+
+    lms = triplet{
+        std::cbrt(lms.comp[0]),
+        std::cbrt(lms.comp[1]),
+        std::cbrt(lms.comp[2])
+    };
+
+    // lms to oklab
+
+    constexpr double to_oklab[3][3] = {
+        {0.2104542553, 0.7936177850, -0.0040720468},
+        {1.9779984951, -2.4285922050, 0.4505937099},
+        {0.0259040371, 0.7827717662, -0.8086757660}
+    };
+    return lms.mat3_mul(to_oklab);
+}
+
+inline triplet oklab_to_xyz(const triplet& oklab, const triplet& white,
+                            bool white_is_d65) noexcept {
+    // oklab to lms
+
+    constexpr double to_lms[3][3] = {
+        {1.0, 0.3963377774, 0.2158037573},
+        {1.0, -0.1055613458, -0.0638541728},
+        {1.0, -0.0894841775, -1.2914855480}
+    };
+
+    auto lms = oklab.mat3_mul(to_lms);
+
+    // lms to xyz
+
+    lms = triplet{
+        lms.comp[0]* lms.comp[0]* lms.comp[0],
+        lms.comp[1]* lms.comp[1]* lms.comp[1],
+        lms.comp[2]* lms.comp[2]* lms.comp[2]
+    };
+
+    constexpr double to_xyz[3][3] = {
+        {1.2270138511, -0.5577999807, 0.2812561490},
+        {-0.0405801784, 1.1122568696, -0.0716766787},
+        {-0.0763812850, -0.4214819784, 1.5861632204}
+    };
+    const auto xyz = lms.mat3_mul(to_xyz);
+
+    // The white point must be converted if colorspace isn't d65
+
+    if(!white_is_d65) {
+        constexpr triplet d65_white(0.95047, 1.0, 1.08883);
+        return chromatic_adapt(xyz, d65_white, white);
+    }
+
+    return xyz;
+
+}
+
+} // namespace cosel
+
+
+#endif // cosel_transforms_h

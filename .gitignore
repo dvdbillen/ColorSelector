@@ -1,0 +1,135 @@
+# =============================================================================
+# C++ objects, libraries, and executables
+# =============================================================================
+*.slo
+*.lo
+*.o
+*.obj
+*.a
+*.la
+*.lai
+*.so
+*.so.*
+*.dll
+*.dylib
+*.exe
+*.out
+*.app
+*.lib
+*.ilk
+*.pdb
+*.exp
+*.pch
+*.gch
+*.idb
+*.iobj
+*.ipdb
+*.res
+
+# =============================================================================
+# Qt / qmake generated files
+# =============================================================================
+object_script.*.Release
+object_script.*.Debug
+*_plugin_import.cpp
+.qmake.cache
+.qmake.stash
+*.pro.user
+*.pro.user.*
+*.qbs.user
+*.qbs.user.*
+*.moc
+moc_*.cpp
+moc_*.h
+qrc_*.cpp
+ui_*.h
+*.qmlc
+*.jsc
+*.qm
+*.prl
+*.qmlls.ini
+Makefile*
+*_qmlcache.qrc
+
+# Qt unit tests
+target_wrapper.*
+
+# =============================================================================
+# Qt Creator
+# =============================================================================
+*.autosave
+*.qmlproject.user
+*.qmlproject.user.*
+CMakeLists.txt.user*
+compile_commands.json
+*creator.user*
+.qtcreator/
+
+# =============================================================================
+# Visual Studio / MSVC
+# =============================================================================
+.vs/
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+*.aps
+*.ncb
+*.opendb
+*.opensdf
+*.sdf
+*.VC.db
+*.VC.VC.opendb
+ipch/
+*.ipch
+*.tlog
+*.lastbuildstate
+*.unsuccessfulbuild
+*.log
+*.recipe
+*.FileListAbsolute.txt
+
+# Build output directories
+[Dd]ebug/
+[Rr]elease/
+[Dd]ebugPublic/
+x64/
+x86/
+Win32/
+bin/
+obj/
+[Bb]uild/
+build-*/
+*-build/
+*-debug/
+*-release/
+
+# =============================================================================
+# CMake
+# =============================================================================
+CMakeCache.txt
+CMakeFiles/
+cmake_install.cmake
+install_manifest.txt
+CTestTestfile.cmake
+_deps/
+Testing/
+CMakeUserPresets.json
+
+# =============================================================================
+# Common temporary / OS / editor files
+# =============================================================================
+*.tmp
+*.bak
+*.orig
+*.rej
+*.swp
+*~
+.DS_Store
+Thumbs.db
+.cache/
+
+# =============================================================================
+# Local backups
+# =============================================================================
+backed_up/
