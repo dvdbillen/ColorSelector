@@ -12,20 +12,9 @@
 
 #include "cosel_geometry.h"
 #include "cosel_triplet.h"
-//#include "cosel_model.h"
+#include "cosel_model.h"
 
 namespace cosel {
-
-namespace details {
-
-// The luv_gamut class is required to be non-dependent on the luv color model so that it can be
-// instantiated by a color space.
-
-
-
-
-} // namespace details
-
 
 class luv_gamut {
 public:
