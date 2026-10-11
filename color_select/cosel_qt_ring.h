@@ -32,15 +32,15 @@
 
 namespace cosel {
 
-class selection_ring : public QWidget {
+class ring_selector : public QWidget {
 public:
-    explicit selection_ring(const selected_color_t& selection, QWidget* parent_);
+    explicit ring_selector(const selected_color_t& selection, QWidget* parent_);
 
-    ~selection_ring() = default;
-    selection_ring(const selection_ring&) = delete;
-    selection_ring& operator =(const selection_ring&) = delete;
-    selection_ring(selection_ring&&) = delete;
-    selection_ring& operator =(selection_ring&&) = delete;
+    ~ring_selector() = default;
+    ring_selector(const ring_selector&) = delete;
+    ring_selector& operator =(const ring_selector&) = delete;
+    ring_selector(ring_selector&&) = delete;
+    ring_selector& operator =(ring_selector&&) = delete;
 
 protected:
     void mousePressEvent(QMouseEvent* event) override;
@@ -184,7 +184,7 @@ private:
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 // Triangle implementations (except rendering)
 
-inline selection_ring::selection_ring(const selected_color_t& selection, QWidget* parent_) :
+inline ring_selector::ring_selector(const selected_color_t& selection, QWidget* parent_) :
     QWidget(parent_),
     selection_(selection),
     triangle(this, true) {
@@ -199,7 +199,7 @@ inline selection_ring::selection_ring(const selected_color_t& selection, QWidget
     });
 }
 
-inline void selection_ring::mousePressEvent(QMouseEvent* event) {
+inline void ring_selector::mousePressEvent(QMouseEvent* event) {
     if(ring_pixmap.isNull() || triangle.pixmap().isNull()) {
         return;
     }
@@ -236,7 +236,7 @@ inline void selection_ring::mousePressEvent(QMouseEvent* event) {
     input_state = input_state_t::triangle_pressed;
 }
 
-inline void selection_ring::mouseMoveEvent(QMouseEvent* event) {
+inline void ring_selector::mouseMoveEvent(QMouseEvent* event) {
     if(input_state == input_state_t::ring_pressed) {
 
         // We are adjusting the ring position (hue)
@@ -257,11 +257,11 @@ inline void selection_ring::mouseMoveEvent(QMouseEvent* event) {
     }
 }
 
-inline void selection_ring::mouseReleaseEvent([[maybe_unused]] QMouseEvent* event) {
+inline void ring_selector::mouseReleaseEvent([[maybe_unused]] QMouseEvent* event) {
     input_state = input_state_t::released;
 }
 
-inline void selection_ring::paintEvent([[maybe_unused]] QPaintEvent* event) {
+inline void ring_selector::paintEvent([[maybe_unused]] QPaintEvent* event) {
 
     const auto& triangle_pixmap = triangle.pixmap();
 
@@ -319,12 +319,12 @@ inline void selection_ring::paintEvent([[maybe_unused]] QPaintEvent* event) {
     p.drawEllipse(uv_rect.adjusted(-1, -1, 2, 2));
 }
 
-inline void selection_ring::resizeEvent(QResizeEvent* event) {
+inline void ring_selector::resizeEvent(QResizeEvent* event) {
     QWidget::resizeEvent(event);
     rebuild();
 }
 
-inline void selection_ring::rebuild() {
+inline void ring_selector::rebuild() {
     const auto dpr = devicePixelRatioF();
     const double w = width();
     const double h = height();

@@ -36,7 +36,10 @@
 
 namespace cosel {
 
+/**
+#@brief Main cosel widget that hosts a collection of controls for selecting a color
 
+**/
 class select_widget : public QWidget {
     Q_OBJECT;
 
@@ -381,7 +384,7 @@ inline QTabWidget* select_widget::make_2d(twod_type_t type) {
             options_.two_d_resolution, options_.two_d_bordered);
 
     // Create HSV ring widget
-    auto* ring_widget = new selection_ring(selection_, this);
+    auto* ring_widget = new ring_selector(selection_, this);
 
     // Add to stack
     auto* stack = new QTabWidget(this);
