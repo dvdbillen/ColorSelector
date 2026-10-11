@@ -406,9 +406,9 @@ inline void selector_2d::paintEvent([[maybe_unused]] QPaintEvent* event) {
 // This class is a parent to the selector_2d and is the one used by the application. It pairs the
 // selector_2d with a saturation slider.
 
-class selector_2d_widget : public QWidget {
+class twod_selector : public QWidget {
 public:
-    explicit selector_2d_widget(const selected_color_t& color_, double corner_rounding,
+    explicit twod_selector(const selected_color_t& color_, double corner_rounding,
                                 int resolution, bool bordered);
 
 private:
@@ -454,7 +454,7 @@ private:
     unsigned color_id = 0;
 };
 
-inline selector_2d_widget::selector_2d_widget(const selected_color_t& color_,
+inline twod_selector::twod_selector(const selected_color_t& color_,
         double corner_rounding, int resolution, bool bordered) :
     selection(color_) {
 

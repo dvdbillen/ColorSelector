@@ -377,7 +377,7 @@ inline QTabWidget* select_widget::make_2d(twod_type_t type) {
     }
 
     // Create HSV 2d widget
-    auto* widget_2d = new selector_2d_widget(selection_, options_.slider_style.rounding,
+    auto* widget_2d = new twod_selector(selection_, options_.slider_style.rounding,
             options_.two_d_resolution, options_.two_d_bordered);
 
     // Create HSV ring widget
