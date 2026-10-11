@@ -7,7 +7,7 @@
 
 #include "outline_tester.h"
 
-#include "color_select/cosel.h"
+#include "color_select/cosel_qt_dialog.h"
 
 #include "unit_test.h"
 

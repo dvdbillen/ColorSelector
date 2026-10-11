@@ -10,6 +10,8 @@
 #ifndef cosel_luv_gamut_h
 #define cosel_luv_gamut_h
 
+#include <cassert>
+
 #include "cosel_geometry.h"
 #include "cosel_triplet.h"
 #include "cosel_model.h"

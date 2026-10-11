@@ -1,7 +1,6 @@
 
 #include <iostream>
 
-#include "color_select/cosel.h"
 #include "color_select/cosel_math.h"
 #include "color_select/cosel_model_hsx.h"
 #include "color_select/cosel_gradient.h"

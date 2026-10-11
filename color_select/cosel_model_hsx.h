@@ -673,9 +673,6 @@ private:
         const auto sat_luv = pure_luv.scaled_uv(s());
 
         const auto ret = rgb(sat_luv).clamped_gamut();
-        // if(iszero(h())) {
-        //     qDebug() << angle << ": " << ret.r() << ", " << ret.g() << ", " << ret.b();
-        // }
         return ret;
     }
 
