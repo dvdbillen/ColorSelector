@@ -1,6 +1,10 @@
 QT       += core gui
 
-greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
+!versionAtLeast(QT_VERSION, 6.0.0) {
+    error("This project requires Qt 6.0 or newer. Current version: $$QT_VERSION")
+}
+
+QT += widgets
 
 QMAKE_CXXFLAGS += -Wno-reorder -Wno-unused-function
 # CONFIG += force_debug_info  # This is the key line for Qt
@@ -39,17 +43,11 @@ SOURCES += \
     gradient_demo_widget.cpp \
     main.cpp \
     unit_test.cpp \
-    mainwindow.cpp \
-	$$files(color_select/*.cpp) \
-    prefs.cpp \
-    select_widget.cpp
+	$$files(color_select/*.cpp)
 
 HEADERS += \
     gradient_demo_widget.h \
-    mainwindow.h \
     unit_test.h \
-    prefs.h \
-    select_widget.h \
     $$files(color_select/*.h)
 
 # Default rules for deployment.

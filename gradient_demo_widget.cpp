@@ -3,28 +3,12 @@
 #include <memory>
 #include <vector>
 
-#include <QBrush>
-#include <QBoxLayout>
-#include <QColor>
 #include <QColorDialog>
-#include <QImage>
-#include <QPainter>
-#include <QPen>
-#include <QPixmap>
-#include <QPushButton>
-#include <QTimer>
 
 #include "outline_tester.h"
 
-#include "color_select/cosel_gradient.h"
-#include "color_select/cosel_math.h"
-#include "color_select/cosel_model.h"
-#include "color_select/cosel_qt_gradient_slider.h"
-#include "color_select/cosel_qt_tools.h"
-#include "color_select/cosel_qt_select_widget.h"
-#include "color_select/cosel_qt_dialog.h"
+#include "color_select/cosel.h"
 
-#include "prefs.h"
 #include "unit_test.h"
 
 void gradient_demo_widget::handle_qtdialog() {

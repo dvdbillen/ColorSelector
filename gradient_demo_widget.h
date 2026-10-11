@@ -6,6 +6,7 @@
 
 #include <QAction>
 #include <QColor>
+#include <QMainWindow>
 #include <QToolBar>
 #include <QWidget>
 
@@ -44,5 +45,18 @@ public:
 signals:
 
 };
+
+class MainWindow : public QMainWindow {
+    Q_OBJECT
+
+public:
+    MainWindow(QWidget* parent = nullptr)
+        : QMainWindow(parent) {
+        setCentralWidget(new gradient_demo_widget());
+        setMinimumSize(500, 150);
+        move(50, 50);
+    }
+};
+
 
 #endif // GRADIENT_DEMO_WIDGET_H

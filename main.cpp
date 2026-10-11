@@ -1,33 +1,13 @@
-#include "mainwindow.h"
 
 #include <iostream>
 
 #include <QApplication>
-#include <QDebug>
 #include <QPalette>
 #include <QStyleFactory>
-#include <QFile>
 
-#include "color_select/cosel.h"
-#include "color_select/cosel_math.h"
-#include "color_select/cosel_model_hsx.h"
-#include "color_select/cosel_gradient.h"
-#include "color_select/cosel_gamut_generator.h"
-
-#include <cfenv>
+#include "gradient_demo_widget.h"
 
 using namespace cosel;
-
-void output_gamuts() {
-    constexpr triplet r{0.6800, 0.3200, 0.209492};
-    constexpr triplet g{0.2650, 0.6900, 0.721595};
-    constexpr triplet b{0.1500, 0.0600, 0.068913};
-    constexpr triplet w{0.3140, 0.3510, 1.0};
-
-    gamut gam{r, g, b, w};
-
-    generate_gamut_class(gam, "dci_p3_gamut");
-}
 
 int main(int argc, char* argv[]) { // NOLINT
     QApplication app(argc, argv);
@@ -62,42 +42,8 @@ int main(int argc, char* argv[]) { // NOLINT
 
 #endif
 
-#if 0
-    const auto sat = 1;
-
-    constexpr int rez = 10000;
-    constexpr int slack = 10;
-    const auto inc = 1.0/rez;
-
-    double worst_error = 0;
-    double worst_error_pos = 0;
-    double worst_h = 0;
-    double worst_h2 = 0;
-
-    for(int i = 0; i < rez - slack; ++i) {
-        const auto pos = i*inc;
-        const auto hsv_c = hsv2(pos, sat, 1);
-        const auto rgb_c = hsv_c.to_rgb();
-        const auto hsv_c2 = hsv2(rgb_c);
-
-        const auto error = std::abs(hsv_c.h() - hsv_c2.h());
-
-        if(error > worst_error) {
-            worst_error = error;
-            worst_error_pos = pos;
-            worst_h = hsv_c.h();
-            worst_h2 = hsv_c2.h();
-        }
-    }
-
-    qDebug() << "worst error =" << worst_error*360 << ", pos =" << worst_error_pos*360 <<
-             ", worst hsv =" << worst_h << ", worst hsv2 = " << worst_h2;
-#endif
-
     MainWindow w;
     w.show();
-
-    //output_gamuts();
 
     return app.exec();
 }
