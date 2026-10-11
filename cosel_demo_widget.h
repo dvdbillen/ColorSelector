@@ -1,5 +1,5 @@
-#ifndef GRADIENT_DEMO_WIDGET_H
-#define GRADIENT_DEMO_WIDGET_H
+#ifndef COSEL_DEMO_WIDGET_H
+#define COSEL_DEMO_WIDGET_H
 
 #include <array>
 #include <vector>
@@ -14,7 +14,7 @@
 #include "color_select/cosel_qt_select_widget.h"
 
 
-class gradient_demo_widget : public QWidget {
+class cosel_demo_widget : public QWidget {
     Q_OBJECT
 
     constexpr static size_t gradient_count  = 4;
@@ -39,7 +39,7 @@ protected:
     void paintEvent([[maybe_unused]] QPaintEvent* event) override;
 public:
 
-    explicit gradient_demo_widget(QWidget* parent = nullptr);
+    explicit cosel_demo_widget(QWidget* parent = nullptr);
 
 
 signals:
@@ -52,11 +52,11 @@ class MainWindow : public QMainWindow {
 public:
     MainWindow(QWidget* parent = nullptr)
         : QMainWindow(parent) {
-        setCentralWidget(new gradient_demo_widget());
+        setCentralWidget(new cosel_demo_widget());
         setMinimumSize(500, 150);
         move(50, 50);
     }
 };
 
 
-#endif // GRADIENT_DEMO_WIDGET_H
+#endif // COSEL_DEMO_WIDGET_H

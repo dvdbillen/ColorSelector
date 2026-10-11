@@ -40,13 +40,13 @@ DEFINES += QT_NO_CAST_FROM_ASCII \
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
 SOURCES += \
-    gradient_demo_widget.cpp \
+    cosel_demo_widget.cpp \
     main.cpp \
     unit_test.cpp \
 	$$files(color_select/*.cpp)
 
 HEADERS += \
-    gradient_demo_widget.h \
+    cosel_demo_widget.h \
     unit_test.h \
     $$files(color_select/*.h)
 

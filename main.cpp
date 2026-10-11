@@ -5,7 +5,7 @@
 #include <QPalette>
 #include <QStyleFactory>
 
-#include "gradient_demo_widget.h"
+#include "cosel_demo_widget.h"
 
 using namespace cosel;
 
