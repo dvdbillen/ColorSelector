@@ -7,8 +7,6 @@
 
 #include "cosel_demo_widget.h"
 
-using namespace cosel;
-
 int main(int argc, char* argv[]) { // NOLINT
     QApplication app(argc, argv);
 

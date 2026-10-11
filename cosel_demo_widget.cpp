@@ -1,17 +1,52 @@
+
+#include <QAction>
+#include <QColor>
+#include <QColorDialog>
+#include <QToolBar>
+
 #include "cosel_demo_widget.h"
 
-#include <memory>
-#include <vector>
-
-#include <QColorDialog>
-
 #include "color_select/cosel_qt_dialog.h"
+#include "color_select/cosel_qt_selected_color.h"
+#include "color_select/cosel_qt_select_widget.h"
+
 #include "unit_test.h"
 
-constexpr bool use_unit_test = false;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-// Execute the standard QColorDialog for comparison
+// DEMO WIDGET
+
+class cosel_demo_widget : public QWidget {
+public:
+    explicit cosel_demo_widget(QWidget* parent = nullptr);
+
+private:
+    constexpr static bool use_unit_test = false;
+
+    // Unlike QColorDialog, the cosel::select_widget does not hold the currently selected color nor
+    // does it signal when it changes. Instead, that functionality is handled by a selected_color
+    // object. Our application uses it as a shared_ptr, so the selected_color_t type is a
+    // shared_ptr to a selected_color.
+    //
+    // You must pass a selected_color_t object to the constructor of most of the cosel widget
+    // classes. There is also an optional constructor to the Qt compatible dialog that accepts one,
+    // but it's not required. That dialog can be used exactly like QColorDialog.
+    cosel::selected_color_t the_color;
+
+    // The state object exists so that a cosel::select_widget can be created and destroyed while
+    // maintaining the state of things such as which tabs are current and the custom colors. The
+    // state can also be made to persist between application sessions, although as of this writing
+    // there is no built-in support for that.
+    cosel::select_widget::state_t cosel_state;
+
+    void handle_qtdialog();
+    void handle_mock_dialog();
+    void handle_coseldialog();
+};
+
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+// Execute the standard QColorDialog
 
 void cosel_demo_widget::handle_qtdialog() {
     const auto current = cosel::qt_from_rgb(the_color->rgb());
@@ -56,31 +91,32 @@ void cosel_demo_widget::handle_coseldialog() {
     // using the version of its constructor that accepts them.
 
 
-    // Slider options - these apply to all color selector sliders. May also be used for color
+    // Slider options - these apply to all color selector sliders. They may also be used for color
     // swatches where appropriate (e.g. rounding).
-    cosel::gradient_slider::style_options_t options;
+
+    cosel::gradient_slider::style_options_t slider_style;
 
     // Set the height of the sliders, (width is sizeable at runtime)
-    options.height = cosel::konst::default_slider_height();
+    slider_style.height = cosel::konst::default_slider_height();
 
     // If true the slider pointers are on top. Default is on bottom
-    options.pointer_top = false;
+    slider_style.pointer_top = false;
 
     // Set corner rounding. This varies from 0 (no rounding) to 1 (fully circular).
-    options.rounding = cosel::konst::default_corner_rounding();
+    slider_style.rounding = cosel::konst::default_corner_rounding();
 
     // Present sliders with labels. If set to false then neither a descriptive label or an editable
     // value label is used. This option is intended for use of the slider classes directly and is
-    // not useful in our widget.
-    options.info = true;
+    // not useful in our widget where it should always be set 'true'.
+    slider_style.info = true;
 
 
     // Widget options
 
     cosel::select_widget::options_t select_options;
 
-    // The slider options are a widget option. Use the ones we set above.
-    select_options.slider_style = options;
+    // The slider style is a widget option. Use the one that was initialized above.
+    select_options.slider_style = slider_style;
 
     // Each type of color model selector slider group can be enabled using
     // cosel::select_widget::options_t.slider_enables. However, that involves indexing by casting
@@ -105,13 +141,14 @@ void cosel_demo_widget::handle_coseldialog() {
     // inside a tab control.
     select_options.two_d_widget = true;
 
-    // Set the resolution as a pixel value that affects width and height of each color. If you do
-    // not want the color selector to be a grid and instead want a conventional detailed selector
-    // then set this to 1.
+    // Set the resolution of the 2D grid as a pixel value that affects width and height of each
+    // color. If you prefer a conventional detailed selector then set this to 1.
     select_options.two_d_resolution = cosel::konst::default_2d_resolution();
 
-    // When using a grid of size >= 4 this flag indicates each segment should be outlined. This
-    // is the default but may cause artifacts on some platforms depending on the resolution.
+    // When using a two_d_resolution >= 4 this flag indicates each segment should be outlined. This
+    // is the default but may cause aliasing artifacts on some platforms depending on the
+    // resolution. Currently known: Windows may show artifacts when display scaling is not 100% and
+    // the resolution is not a multiple of 4.
     select_options.two_d_bordered = cosel::konst::default_2d_bordered();
 
 
@@ -129,7 +166,7 @@ void cosel_demo_widget::handle_coseldialog() {
 
     // Connect the state change signal. This is a way to track state changes such as which tab is
     // selected as well as changes to custom colors. It is not required to use this signal. If the
-    // widget is still accessible after the selection is complete then you can read the state from
+    // widget is still accessible after a selection is complete then you can read the state from
     // the class instance. In this demo code however, the widget is going to be parented by the
     // dialog and deleted after exec(). We won't have that oppotunity.
     connect(selector, &cosel::select_widget::state_changed,
@@ -150,9 +187,6 @@ void cosel_demo_widget::handle_coseldialog() {
     dialog.exec();
 }
 
-void cosel_demo_widget::paintEvent([[maybe_unused]] QPaintEvent* event) {
-}
-
 cosel_demo_widget::cosel_demo_widget(QWidget* parent)
     : QWidget{parent} {
 
@@ -162,7 +196,7 @@ cosel_demo_widget::cosel_demo_widget(QWidget* parent)
     auto* toolbar = new QToolBar();
     toolbar->setFixedHeight(28);
 
-    qtdialog = new QAction(tr("Qt Dialog"), this);
+    auto* qtdialog = new QAction(tr("Qt Dialog"), this);
     qtdialog->setToolTip(tr("Show QColorDialog for comparison"));
     connect(qtdialog, &QAction::triggered, this, [this]() {
         handle_qtdialog();
@@ -170,7 +204,7 @@ cosel_demo_widget::cosel_demo_widget(QWidget* parent)
 
     toolbar->addAction(qtdialog);
 
-    mockdialog = new QAction(tr("Mock Dialog"), this);
+    auto* mockdialog = new QAction(tr("Mock Dialog"), this);
     mockdialog->setToolTip(tr("Show Cosel QColorDialog replacement"));
     connect(mockdialog, &QAction::triggered, this, [this]() {
         handle_mock_dialog();
@@ -178,7 +212,7 @@ cosel_demo_widget::cosel_demo_widget(QWidget* parent)
 
     toolbar->addAction(mockdialog);
 
-    coseldialog = new QAction(tr("Cosel Dialog"), this);
+    auto* coseldialog = new QAction(tr("Cosel Dialog"), this);
     coseldialog->setToolTip(tr("Show Cosel dialog with different options"));
     connect(coseldialog, &QAction::triggered, this, [this]() {
         handle_coseldialog();
@@ -187,7 +221,7 @@ cosel_demo_widget::cosel_demo_widget(QWidget* parent)
     toolbar->addAction(coseldialog);
 
     if constexpr(use_unit_test) {
-        unittest = new QAction(tr("Unit Test"), this);
+        auto* unittest = new QAction(tr("Unit Test"), this);
         connect(unittest, &QAction::triggered, this, [this]() {
             setEnabled(false);
             unit_test();
@@ -203,4 +237,15 @@ cosel_demo_widget::cosel_demo_widget(QWidget* parent)
 
     setLayout(main_layout);
 
+}
+
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+// MAIN WINDOW
+
+MainWindow::MainWindow(QWidget* parent)
+    : QMainWindow(parent) {
+    setCentralWidget(new cosel_demo_widget());
+    setMinimumSize(500, 150);
+    move(50, 50);
 }
