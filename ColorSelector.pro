@@ -8,7 +8,7 @@ QT += widgets
 
 QMAKE_CXXFLAGS += -Wno-reorder -Wno-unused-function
 # CONFIG += force_debug_info  # This is the key line for Qt
-CONFIG += c++17
+CONFIG += c++20
 QMAKE_CXXFLAGS_RELEASE -= -O1
 QMAKE_CXXFLAGS_RELEASE -= -O2
 QMAKE_CXXFLAGS_RELEASE += -O3

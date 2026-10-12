@@ -24,7 +24,7 @@ Cosel is color-science aware, allowing for greater functionality than purely RGB
 
 - Qt 6.x
 
-- C++17 or higher
+- C++17 or higher (demo requires C++20)
 
 
 
