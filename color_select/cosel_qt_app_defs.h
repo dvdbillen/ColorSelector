@@ -70,7 +70,7 @@ inline static constexpr int min_edit_width() {
     return 55;
 }
 inline static constexpr int max_edit_width() {
-    return 60;
+    return 65;
 }
 
 // Min/max size of labels in info widget

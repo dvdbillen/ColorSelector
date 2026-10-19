@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 // Copyright (c) 2026 David Billen
 
-// Custom rendered slider control derived straight from QWidget This class was ported from a
+// Custom rendered slider control derived straight from QWidget This class was ported from my
 // repository to implement our sliders with fully custom rendering. It is designed to support
 // either inheritance or compositional programming style.
 

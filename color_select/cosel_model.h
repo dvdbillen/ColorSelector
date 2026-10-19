@@ -25,17 +25,6 @@
 
 namespace cosel {
 
-// Convert CIE LAB/LUV L to linear luminance
-constexpr static inline double L_to_y(double L) noexcept {
-    const auto y = (L + 16)*(1.0/116);
-    return (L > konst::k_*konst::e_)? (y*y*y): (L/konst::k_);
-}
-
-// Convert linear luminance to CIE LAB/LUV L
-constexpr static inline double y_to_L(double y) noexcept {
-    return (y > konst::e_)? (116*std::pow(y, (1.0/3)) - 16): (konst::k_*y);
-}
-
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 // C O L O R   B A S E

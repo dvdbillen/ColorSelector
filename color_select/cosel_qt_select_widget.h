@@ -24,6 +24,7 @@
 #include "cosel_qt_alpha_slider.h"
 #include "cosel_qt_app_defs.h"
 #include "cosel_qt_html_widget.h"
+#include "cosel_qt_info_widget.h"
 #include "cosel_qt_palette.h"
 #include "cosel_qt_ring.h"
 #include "cosel_qt_screen_picker.h"
@@ -386,6 +387,10 @@ inline QTabWidget* select_widget::make_2d(twod_type_t type) {
     // Create HSV ring widget
     auto* ring_widget = new ring_selector(selection_, this);
 
+    // Create info widget
+    info_options_t info_options = { true, false, true, true, true, true, true, false };
+    auto* info_w = new info_widget(selection_, info_options, this);
+
     // Add to stack
     auto* stack = new QTabWidget(this);
 
@@ -394,6 +399,9 @@ inline QTabWidget* select_widget::make_2d(twod_type_t type) {
 
     info = get_twod_info(twod_type_t::ring);
     stack->addTab(ring_widget, info.name);
+
+    info = get_twod_info(twod_type_t::info);
+    stack->addTab(info_w, info.name);
 
     stack->setFixedSize(konst::default_2d_size());
     stack->setTabPosition(QTabWidget::South);

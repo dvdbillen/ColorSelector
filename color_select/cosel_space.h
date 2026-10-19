@@ -3,7 +3,7 @@
 
 // Color space support
 
-// TODO: Implement runtime selectable color spaces if there is any interest in them
+// TODO: Implement runtime selectable color spaces if there is any interest in the feature.
 
 #ifndef cosel_color_space_h
 #define cosel_color_space_h
@@ -19,41 +19,35 @@ namespace cosel {
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 // This gamut class is not currently used at run time. It was written for the code that generated the
 // predefined gamut classes which are constants. It is retained in the source to fully document the
-// gamut duck type, both literally (with comments on the functions), and practically (the code can
+// gamut type, both literally (with comments on the functions), and practically (the code can
 // be examined to verify anything uncertain).
 //
-// See any of the defined color spaces for an example of the color_space duck type. They contain a
+// See any of the defined color spaces for an example of the color_space type. They contain a
 // function to return an instance of a gamut() and two functions to convert to/from linear/gamma.
 
 class gamut {
     std::array<triplet, 3> f_mx;
     std::array<triplet, 3> r_mx;
 
-    triplet cie_r;
-    triplet cie_g;
-    triplet cie_b;
-    triplet cie_w;
-
     triplet xyz_w;
-    triplet xyz_r;
 
     triplet lum_mx;
 
     bool d65_ = false;
 
-    void generate_matrices() {
-        const auto xr = cie_r.comp[0];
-        const auto yr = cie_r.comp[1];
+    void generate_matrices(const triplet& r, const triplet& g, const triplet& b, const triplet& w) {
+        const auto xr = r.comp[0];
+        const auto yr = r.comp[1];
         const auto zr = 1 - (xr + yr);
-        const auto xg = cie_g.comp[0];
-        const auto yg = cie_g.comp[1];
+        const auto xg = g.comp[0];
+        const auto yg = g.comp[1];
         const auto zg = 1 - (xg + yg);
-        const auto xb = cie_b.comp[0];
-        const auto yb = cie_b.comp[1];
+        const auto xb = b.comp[0];
+        const auto yb = b.comp[1];
         const auto zb = 1 - (xb + yb);
 
-        const auto xw = cie_w.comp[0];
-        const auto yw = cie_w.comp[1];
+        const auto xw = w.comp[0];
+        const auto yw = w.comp[1];
         const auto zw = 1 - (xw + yw);
 
         // XYZ -> RGB matrix, before scaling to white.
@@ -107,19 +101,15 @@ class gamut {
 
 public:
     // Construct with CIE coordinates for RGB and white.
-    // This is not part of the duck type which should have an empty constexpr constructor!
+    // This is not part of the type which should have an empty constexpr constructor!
     explicit gamut(const triplet& r, const triplet& g, const triplet& b, const triplet& w) :
-        cie_r(r),
-        cie_g(g),
-        cie_b(b),
-        cie_w(w),
         xyz_w(w.comp[0]*w.comp[2]/w.comp[1], w.comp[2],
               (1 - w.comp[0] - w.comp[1])*w.comp[2]/w.comp[1]),
-        lum_mx(cie_r.comp[2], cie_g.comp[2], cie_b.comp[2]) {
+        lum_mx(r.comp[2], g.comp[2], b.comp[2]) {
 
-        generate_matrices();
+        generate_matrices(r, g, b, w);
 
-        constexpr triplet d65_white(0.95047, 1.0, 1.08883);
+        constexpr triplet d65_white{0.95047, 1.0, 1.08883};
 
         d65_ = compare(xyz_w.comp[0], d65_white.comp[0], .001) &&
                compare(xyz_w.comp[1], d65_white.comp[1], .001) &&
@@ -170,26 +160,6 @@ public:
         return lum_mx;
     }
 
-    // Return CIE coordinates for red.
-    const triplet& cie_red() const noexcept {
-        return cie_r;
-    }
-
-    // Return CIE coordinates for green.
-    const triplet& cie_green() const noexcept {
-        return cie_g;
-    }
-
-    // Return CIE coordinates for blue.
-    const triplet& cie_blue() const noexcept {
-        return cie_b;
-    }
-
-    // Return CIE coordinates for white.
-    const triplet& cie_white() const noexcept {
-        return cie_w;
-    }
-
     // Return XYZ coordinates for white.
     const triplet& xyz_white() const noexcept {
         return xyz_w;
@@ -211,12 +181,7 @@ class dci_p3_gamut {
         triplet(-0.7951680, 1.6897321, 0.0226472),
         triplet(0.0412419, -0.0876390, 1.1009294)
     };
-    constexpr static triplet cie_r = triplet(0.6800000, 0.3200000, 0.2094920);
-    constexpr static triplet cie_g = triplet(0.2650000, 0.6900000, 0.7215950);
-    constexpr static triplet cie_b = triplet(0.1500000, 0.0600000, 0.0689130);
-    constexpr static triplet cie_w = triplet(0.3140000, 0.3510000, 1.0000000);
     constexpr static triplet xyz_w = triplet(0.8945869, 1.0000000, 0.9544160);
-    constexpr static triplet xyz_r = triplet(1/0.8945869, 1.00000, 1/0.9544160);
     constexpr static triplet lum_mx = triplet(0.2094920, 0.7215950, 0.0689130);
 public:
     constexpr bool d65() const {
@@ -250,18 +215,6 @@ public:
     constexpr const triplet& luminance_mx() const {
         return lum_mx;
     }
-    constexpr const triplet& cie_red() const {
-        return cie_r;
-    }
-    constexpr const triplet& cie_green() const {
-        return cie_g;
-    }
-    constexpr const triplet& cie_blue() const {
-        return cie_b;
-    }
-    constexpr const triplet& cie_white() const {
-        return cie_w;
-    }
     constexpr const triplet& xyz_white() const {
         return xyz_w;
     }
@@ -285,12 +238,7 @@ class srgb_gamut {
         triplet(-0.9692660, 1.8760108, 0.0415560),
         triplet(0.0556434, -0.2040259, 1.0572252)
     };
-    constexpr static triplet cie_r = triplet(0.64000, 0.33000, 0.21266);
-    constexpr static triplet cie_g = triplet(0.30000, 0.60000, 0.71516);
-    constexpr static triplet cie_b = triplet(0.15000, 0.06000, 0.07219);
-    constexpr static triplet cie_w = triplet(0.31270, 0.32900, 1.00000);
     constexpr static triplet xyz_w = triplet(0.95046, 1.00000, 1.08906);
-    constexpr static triplet xyz_r = triplet(1/0.95046, 1.00000, 1/1.08906);
     constexpr static triplet lum_mx = triplet(0.21266, 0.71516, 0.07219);
 public:
     constexpr bool d65() const {
@@ -328,18 +276,6 @@ public:
     constexpr const triplet& luminance_mx() const {
         return lum_mx;
     }
-    constexpr const triplet& cie_red() const {
-        return cie_r;
-    }
-    constexpr const triplet& cie_green() const {
-        return cie_g;
-    }
-    constexpr const triplet& cie_blue() const {
-        return cie_b;
-    }
-    constexpr const triplet& cie_white() const {
-        return cie_w;
-    }
     constexpr const triplet& xyz_white() const {
         return xyz_w;
     }
@@ -351,21 +287,16 @@ public:
 // function comments in gamut class.
 class adobe_gamut {
     constexpr static std::array<triplet, 3> f_mx = {
-        triplet(0.5766690, 0.1855582, 0.1882286),
+        triplet(0.5766690, 0.1855582, 0.1882286), // NOLINT: warning confused with std numbers
         triplet(0.2973450, 0.6273636, 0.0752915),
         triplet(0.0270314, 0.0706889, 0.9913375)
     };
     constexpr static std::array<triplet, 3> r_mx = {
-        triplet(2.0415879, -0.5650070, -0.3447314),
+        triplet(2.0415879, -0.5650070, -0.3447314), // NOLINT: warning confused with std numbers
         triplet(-0.9692436, 1.8759675, 0.0415551),
         triplet(0.0134443, -0.1183624, 1.0151750)
     };
-    constexpr static triplet cie_r = triplet(0.6400000, 0.3300000, 0.2973610);
-    constexpr static triplet cie_g = triplet(0.2100000, 0.7100000, 0.6273550);
-    constexpr static triplet cie_b = triplet(0.1500000, 0.0600000, 0.0752850);
-    constexpr static triplet cie_w = triplet(0.3127000, 0.3290000, 1.0000000);
     constexpr static triplet xyz_w = triplet(0.9504559, 1.0000000, 1.0890578);
-    constexpr static triplet xyz_r = triplet(1/0.9504559, 1.0000000, 1/1.0890578);
     constexpr static triplet lum_mx = triplet(0.2973610, 0.6273550, 0.0752850);
 public:
     constexpr bool d65() const {
@@ -403,18 +334,6 @@ public:
     constexpr const triplet& luminance_mx() const {
         return lum_mx;
     }
-    constexpr const triplet& cie_red() const {
-        return cie_r;
-    }
-    constexpr const triplet& cie_green() const {
-        return cie_g;
-    }
-    constexpr const triplet& cie_blue() const {
-        return cie_b;
-    }
-    constexpr const triplet& cie_white() const {
-        return cie_w;
-    }
     constexpr const triplet& xyz_white() const {
         return xyz_w;
     }
@@ -429,7 +348,7 @@ struct srgb_colorspace {
         return srgb_gamut();
     }
 
-    constexpr double to_linear(double gamma) const {
+    double to_linear(double gamma) const {
         constexpr double threshold = .04045;
         constexpr double scale_low = 1/12.92;
         constexpr double scale_high = 1/1.055;
@@ -443,7 +362,7 @@ struct srgb_colorspace {
         return std::pow((gamma + offset)*scale_high, curve);
     }
 
-    constexpr double to_gamma(double linear) const {
+    double to_gamma(double linear) const {
         constexpr double threshold = .0031308;
         constexpr double scale_low = 12.92;
         constexpr double scale_high = 1.055;
@@ -464,13 +383,13 @@ struct srgb_22_colorspace {
         return srgb_gamut();
     }
 
-    constexpr double to_linear(double gamma) const {
+    double to_linear(double gamma) const {
         constexpr double curve = 2.2;
 
         return std::pow(gamma, curve);
     }
 
-    constexpr double to_gamma(double linear) const {
+    double to_gamma(double linear) const {
         constexpr double curve = 1/2.2;
 
         return std::pow(linear, curve);
@@ -483,33 +402,14 @@ struct srgb_24_colorspace {
         return srgb_gamut();
     }
 
-    constexpr double to_linear(double gamma) const {
+    double to_linear(double gamma) const {
         constexpr double curve = 2.4;
 
         return std::pow(gamma, curve);
     }
 
-    constexpr double to_gamma(double linear) const {
+    double to_gamma(double linear) const {
         constexpr double curve = 1/2.4;
-
-        return std::pow(linear, curve);
-    }
-};
-
-// This uses a simple 2.6 power law for the srgb tone curve.
-struct srgb_26_colorspace {
-    constexpr srgb_gamut gamut() const {
-        return srgb_gamut();
-    }
-
-    constexpr double to_linear(double gamma) const {
-        constexpr double curve = 2.6;
-
-        return std::pow(gamma, curve);
-    }
-
-    constexpr double to_gamma(double linear) const {
-        constexpr double curve = 1/2.6;
 
         return std::pow(linear, curve);
     }
@@ -520,13 +420,13 @@ struct adobe_colorspace {
         return adobe_gamut();
     }
 
-    constexpr double to_linear(double gamma) const {
+    double to_linear(double gamma) const {
         constexpr double curve = 2.2;
 
         return std::pow(gamma, curve);
     }
 
-    constexpr double to_gamma(double linear) const {
+    double to_gamma(double linear) const {
         constexpr double curve = 1/2.2;
 
         return std::pow(linear, curve);
@@ -538,13 +438,13 @@ struct dci_p3_colorspace {
         return dci_p3_gamut();
     }
 
-    constexpr double to_linear(double gamma) const {
+    double to_linear(double gamma) const {
         constexpr double curve = 2.6;
 
         return std::pow(gamma, curve);
     }
 
-    constexpr double to_gamma(double linear) const {
+    double to_gamma(double linear) const {
         constexpr double curve = 1/2.6;
 
         return std::pow(linear, curve);
@@ -556,13 +456,13 @@ struct dci_p3_colorspace_24 {
         return dci_p3_gamut();
     }
 
-    constexpr double to_linear(double gamma) const {
+    double to_linear(double gamma) const {
         constexpr double curve = 2.4;
 
         return std::pow(gamma, curve);
     }
 
-    constexpr double to_gamma(double linear) const {
+    double to_gamma(double linear) const {
         constexpr double curve = 1/2.4;
 
         return std::pow(linear, curve);
@@ -570,7 +470,7 @@ struct dci_p3_colorspace_24 {
 };
 
 // Currently the only method of changing the color space either for compile time or run time is to
-// modify this definition.
+// modify this definition. Variable color space support will be added if there's any interest.
 
 using color_space = srgb_colorspace;
 

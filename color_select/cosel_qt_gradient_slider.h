@@ -226,7 +226,8 @@ inline gradient_slider::gradient_slider(QString slider_label, double display_min
 
         // TODO: Maybe calculate precision to handle the possibility of 0-1 range with more than 2.
         edit = new slider_label_edit(display_min, display_max, 2);
-        edit->setFixedSize(gradient_slider_knob_width*2, options.height);
+        edit->setMinimumSize(gradient_slider_knob_width*2, options.height);
+        edit->setMaximumSize(gradient_slider_knob_width*3, options.height);
 
         connect(edit, &slider_label_edit::edited, this, [this](double n) {
             set_value(n);
@@ -252,7 +253,7 @@ inline gradient_slider::gradient_slider(QString slider_label, double display_min
         layout->addWidget(label);
     }
 
-    layout->addWidget(slider);
+    layout->addWidget(slider, 100);
 
     if(edit != nullptr) {
         layout->addWidget(edit);

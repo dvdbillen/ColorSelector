@@ -6,7 +6,7 @@
 
 > It is largely undocumented, the included demo is only a temporary placeholder, and it has so far only been tested on Windows (not yet on Linux or macOS).  
 
-> Expect the public interface and demo to change.
+> The demo program is known to have build issues on some platforms.
 
 
 

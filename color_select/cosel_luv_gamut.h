@@ -1,11 +1,7 @@
 // SPDX-License-Identifier: MIT
 // Copyright (c) 2026 David Billen
 
-// Utilities for accessing the gamut in CIELUV color space. Used by hsv2 class.
-
-// TODO: This is color space dependent and instantiated statically, solidifying the static
-// dependency on color spaces. It only needs to be instantiated outside of usage to avoid
-// constructing it every color conversion. Find a better way.
+// Utilities for accessing the gamut in CIELUV color space.
 
 #ifndef cosel_luv_gamut_h
 #define cosel_luv_gamut_h
@@ -13,8 +9,8 @@
 #include <cassert>
 
 #include "cosel_geometry.h"
-#include "cosel_triplet.h"
-#include "cosel_model.h"
+#include "cosel_space.h"
+#include "cosel_transforms.h"
 
 namespace cosel {
 
@@ -32,23 +28,31 @@ public:
     // Convert a uv angle to a HUE value
     double angle_to_hue(double angle) const noexcept;
 
-    // L value certain to contain the full gamut
+    // L value certain to contain the full gamut.
+    //
+    // In LUV the gamut is always represented by a triangle unless the L level exceeds the full
+    // brightness of one or more RGB components - then it becomes a more complex polygon. safe_L is
+    // certain to be darker than pure blue in any realistic color space, ensuring we get the
+    // triangle, (but not so close to black it causes precision issues in RGB).
     constexpr double safe_L() const {
         return safe_L_;
     }
 
-    // Polar C value certain to be in gamut at safe_L() for any hue
+    // Polar C value used as starting point to find gamut edge
     constexpr double safe_C() const {
         return safe_C_;
     }
 
-    // Helper, return luv for angle at safe values
-    luv safe_luv(double angle) const {
-        return luv(safe_L_, std::cos(angle)*safe_C_, std::sin(angle)*safe_C_);
+    // TODO: This is color space dependent and instantiated statically which adds another component
+    // to the static dependency on color spaces. Find a better way.
+    static const luv_gamut& instance() {
+        static luv_gamut inst_;
+        return inst_;
     }
+
 private:
     static constexpr double safe_L_ = 25;
-    static constexpr double safe_C_ = 70;
+    static constexpr double safe_C_ = 30;
 
     // Red, green, blue
     std::array<uv_t, 3> rgb_coords;
@@ -60,16 +64,33 @@ private:
 };
 
 inline luv_gamut::luv_gamut() noexcept {
-    const auto lscale = L_to_y(safe_L_);
+    // To keep construction options as flexible as possible, this code is not dependent on the
+    // color model classes (rgb/luv).
 
-    const auto rgb_red = rgb(1, 0, 0).forced(lscale);
-    const auto rgb_green = rgb(0, 1, 0).forced(lscale);
-    const auto rgb_blue = rgb(0, 0, 1).forced(lscale);
+    // Convert safe L to xyY type luminance
+    const auto y = L_to_y(safe_L_);
 
+    const auto& gamut = color_space().gamut();
+    const auto& lums = gamut.luminance_mx();
+
+    // Get RGB in LUV coordinates at safe_L
+    const auto rgb_red = triplet(y/lums.comp[0], 0, 0);
+    const auto xyz_red = gamut.rgb2xyz(rgb_red);
+    const auto luv_red = xyz_to_luv(xyz_red, gamut.xyz_white());
+
+    const auto rgb_green = triplet(0, y/lums.comp[1], 0);
+    const auto xyz_green = gamut.rgb2xyz(rgb_green);
+    const auto luv_green = xyz_to_luv(xyz_green, gamut.xyz_white());
+
+    const auto rgb_blue = triplet(0, 0, y/lums.comp[2]);
+    const auto xyz_blue = gamut.rgb2xyz(rgb_blue);
+    const auto luv_blue = xyz_to_luv(xyz_blue, gamut.xyz_white());
+
+    // Save the coordinate.
     rgb_coords = {
-        luv(rgb_red).uv(),
-        luv(rgb_green).uv(),
-        luv(rgb_blue).uv()
+        uv_t{luv_red.comp[1], luv_red.comp[2]},
+        uv_t{luv_green.comp[1], luv_green.comp[2]},
+        uv_t{luv_blue.comp[1], luv_blue.comp[2]}
     };
 
     red_angle = rgb_coords[0].angle();
@@ -82,8 +103,8 @@ inline luv_gamut::uv_t luv_gamut::gamut_max(const uv_t& uv) const noexcept {
     uv_t best;
 
     for(int i = 0; i < 3; ++i) {
-        const uv_t& a = rgb_coords[i];
-        const uv_t& b = rgb_coords[(i + 1) % 3];
+        const auto& a = rgb_coords[i];
+        const auto& b = rgb_coords[(i + 1) % 3];
         const auto num = a.cross(b);
         const auto den = d.cross(b - a);
 
@@ -126,8 +147,11 @@ inline double luv_gamut::hue_to_angle(double hue) const noexcept {
 inline double luv_gamut::angle_to_hue(double angle) const noexcept {
     auto h = abs_radian(angle - red_angle)/(pi()*2);
     constexpr auto eps = 1e-6;
-    if (h < eps || h > 1.0 - eps)
+
+    if(h < eps || h > 1.0 - eps) {
         h = 0.0;
+    }
+
     return h;
 }
 

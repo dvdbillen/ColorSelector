@@ -33,25 +33,30 @@ public:
         selection_(std::move(selection)),
         data(options) {
 
+        smaller_font = font();
+        int ps = smaller_font.pointSize();
+
+        if(ps > 1) {
+            smaller_font.setPointSize(ps - 1);
+        }
+
         // Get an ID although currently we don't use it
         id = selection_->assign_id();
 
         // Create a grid layout and add the items to it
         auto* grid_layout = new QGridLayout();
-        //grid_layout->setContentsMargins(0, 0, 0, 0);
+        grid_layout->setContentsMargins(0, 0, 0, 0);
         grid_layout->setSpacing(4);
 
         data.foreach_item([this, grid_layout](info_type_t& item) {
             add_row(grid_layout, item);
         });
 
-        auto* box = new QGroupBox(this);
-        box->setTitle(tr("Types"));
-        box->setFlat(true);
-        box->setLayout(grid_layout);
         auto* main_layout = new QVBoxLayout();
-        main_layout->setContentsMargins(0, 0, 0, 0);
-        main_layout->addWidget(box);
+        main_layout->setContentsMargins(6,6,6,6);
+        main_layout->addLayout(grid_layout);
+        main_layout->addStretch();
+
         setLayout(main_layout);
 
         setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
@@ -74,15 +79,15 @@ private:
     unsigned id = 0;
 
     info_data_t data;
+    QFont smaller_font;
 
     struct row_t {
         triplet data;
         QLabel* label = nullptr;
-        std::array<slider_label_edit *, 3> editbox = { nullptr, nullptr, nullptr };
+        std::array<slider_label_edit*, 3> editbox = { nullptr, nullptr, nullptr };
     };
 
     std::vector<row_t> rows;
-    QLineEdit* hex_edit = nullptr;
 
     void add_row(QGridLayout* grid_layout, info_type_t& item);
     void handle_color_change();
@@ -95,7 +100,9 @@ inline void info_widget::set_error(unsigned int index, const xyz& color) {
 
     if(!item.in_gamut()) {
         // This item can specify a color out-of-gamut. Indicate an error if it is.
+
         const auto error = !rgb(color).in_gamut();
+
         auto* label = rows[index].label;
 
         if(item.error() != error) {
@@ -117,10 +124,11 @@ inline void info_widget::add_row(QGridLayout* grid_layout, info_type_t& item) {
 
     // Add the name of the item
     row.label = new QLabel();
+    row.label->setFont(smaller_font);
     row.label->setMinimumWidth(konst::min_label_width());
     row.label->setMaximumWidth(konst::min_label_width());
     row.label->setText(item.name());
-    row.label->setAlignment(Qt::AlignLeft);
+    row.label->setAlignment(Qt::AlignCenter);
     grid_layout->addWidget(row.label, row_number, 0, 1, 1);
 
 
@@ -132,12 +140,27 @@ inline void info_widget::add_row(QGridLayout* grid_layout, info_type_t& item) {
     for(int i = 0; i < 3; ++i) {
         // Create the edit widget and add to grid layout
         row.editbox[i] = new slider_label_edit(lowrange.comp[i], highrange.comp[i], item.precision(), this);
+        row.editbox[i]->setFont(smaller_font);
         grid_layout->addWidget(row.editbox[i], row_number, i + 1, 1, 1);
 
         // Connect the edit widget signal to handle changes
         connect(row.editbox[i], &slider_label_edit::edited, this, [this, index, i](double n) {
             const auto& item = data.get(index);
-            // Set the individual color component that corresponds to this edit widget
+
+            // Set the individual color component that corresponds to this edit widget. But if this
+            // is a type that can be out-of-gamut, only set it if the change exceeds a threshold.
+            // This is needed because the precision lost by the editor can cause a false error when
+            // testing to see if it's in gamut. (The problem is more common than you might assume
+            // because of fully saturated colors which are easily set using models like RGB).
+            if(!data.get(index).in_gamut()) {
+                constexpr auto threshold = .001;
+
+                if(compare(rows[index].data.comp[i], n, threshold)) {
+                    // Very close, just keep what was there
+                    return;
+                }
+            }
+
             rows[index].data.comp[i] = n;
             // Calculate the resulting color and set it
             const auto color = item.to_xyz(rows[index].data);

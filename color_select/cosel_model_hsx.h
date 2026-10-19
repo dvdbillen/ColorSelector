@@ -15,8 +15,6 @@
 //
 // All the classes use normals for all three components. Scaling is handled by UI.
 
-// TODO: Decide when/how to initialize luv_gamut (right now it's a static in hsv2)
-
 #ifndef cosel_model_hsx_h
 #define cosel_model_hsx_h
 
@@ -103,14 +101,6 @@ public:
             IMPL(5/6.0, s, b).to_rgb(),
             IMPL(0/6.0, s, b).to_rgb()
         };
-    }
-
-protected:
-    // TODO: This will need to be moved if codebase modified to support runtime color space
-    // changes
-    static const luv_gamut& luv_info() {
-        static luv_gamut info;
-        return info;
     }
 
 private:
@@ -396,7 +386,7 @@ public:
 private:
     triplet from_rgb_(const rgb& c_) {
 
-        const auto& luvinfo = luv_info();
+        const auto& luvinfo = luv_gamut::instance();
 
         // Calc V
         const auto v_ = clamp(c_.to_gamma().max());
@@ -453,7 +443,7 @@ private:
         // This may not shave enough time off a full conversion to be worth duplicating part of the
         // logic. TODO: Compare speed against: return from_rgb_(c_).comp[0];
 
-        const auto& luvinfo = luv_info();
+        const auto& luvinfo = luv_gamut::instance();
 
         if(c_.is_gray()) {
             return 0;
@@ -495,7 +485,7 @@ private:
             return rgb(v(), v(), v()).to_linear();
         }
 
-        const auto& luvinfo = luv_info();
+        const auto& luvinfo = luv_gamut::instance();
 
         const auto h_sector = h()*6;
         const auto index = int(h_sector);
@@ -574,9 +564,9 @@ private:
 // H S L +
 // Non-standard HSL that produces more consistent levels
 //
-// H: Works like HSL but values are not identical except for the primaries and secondaries
+// H: Works like HSL but values are not compatible
 // S: Amount of saturation from gray to the most saturated the hue can be at the L setting
-// L: LAB L*.01
+// L: LAB L/100
 
 class hsl2 : public details::hsb_base<hsl2> {
     friend class details::hsb_base<hsl2>;
@@ -598,7 +588,7 @@ public:
     }
 private:
     triplet from_rgb_(const rgb& rgb_c) noexcept {
-        const auto& luvinfo = luv_info();
+        const auto& luvinfo = luv_gamut::instance();
         const auto luminance = rgb_c.level();
 
         if(rgb_c.is_gray()) {
@@ -644,11 +634,11 @@ private:
 
         const auto luv_c = luv(rgb_c);
         const auto angle = std::atan2(luv_c.v(), luv_c.u());
-        return luv_info().angle_to_hue(angle);
+        return luv_gamut::instance().angle_to_hue(angle);
     }
 
     rgb to_rgb_() const noexcept {
-        const auto& luvinfo = luv_info();
+        const auto& luvinfo = luv_gamut::instance();
         const auto luminance = L_to_y(l()*100);
 
         if(s() <= zero_epsilon || l() <= zero_epsilon) {
@@ -661,14 +651,15 @@ private:
         // Get an RGB in the darker full gamut range (via LUV). Using the dark level lets us get a
         // full chroma color down where the gamut is a full RGB triangle (and the angle is
         // therefore accurate)
-        const auto dark_luv = luvinfo.safe_luv(angle);
+        const auto dark_luv = luv(luvinfo.safe_L(),
+                                  std::cos(angle)*luvinfo.safe_C(), std::sin(angle)*luvinfo.safe_C());
         const auto dark_rgb = rgb(dark_luv);
         // Force it to specified brightness.
         const auto bright_rgb = dark_rgb.forced(L_to_y(l()*100));
         // Force to edge of gamut (max chroma)
         const auto adjusted_rgb = bright_rgb.in_gamut() ? bright_rgb.maxxed_gamut()
                                   : bright_rgb.clamped_gamut();
-        // Put it back to LUV
+        // Put it back to LUV to set the saturation
         const auto pure_luv = luv{adjusted_rgb};
         const auto sat_luv = pure_luv.scaled_uv(s());
 

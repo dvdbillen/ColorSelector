@@ -29,6 +29,7 @@ enum class info_data_type_t : std::int8_t {
     hsv,
     hcl,
     lab,
+    luv,
     oklab,
 
     count
@@ -78,6 +79,9 @@ public:
         return name_;
     }
 
+    // This does not indicate the current state of the data. It indicates whether the type itself
+    // is constrained to the color space gamut (e.g. RGB, HSV, etc..), or can exceed it, (e.g. LAB,
+    // LUV, etc).
     bool in_gamut() const {
         return in_gamut_;
     }
@@ -205,11 +209,11 @@ inline void info_data::add_info_types() {
     };
 
     struct rgb255_info : public rgb_info {
-        rgb255_info() : rgb_info(info_data_type_t::rgb255, QObject::tr("RGB 0-255"), 255) {}
+        rgb255_info() : rgb_info(info_data_type_t::rgb255, QObject::tr("RGB"), 255) {}
     };
 
     struct rgb100_info : public rgb_info {
-        rgb100_info() : rgb_info(info_data_type_t::rgb100, QObject::tr("RGB 0-100"), 100) {}
+        rgb100_info() : rgb_info(info_data_type_t::rgb100, QObject::tr("RGB"), 100) {}
     };
 
     if(options[index(info_data_type_t::rgb255)]) {
@@ -277,7 +281,7 @@ inline void info_data::add_info_types() {
     // HCL //////////////////////////////////////////////////////////////////////////////////////////
     struct hcl_info : public info_type {
         hcl_info() : info_type(info_data_type_t::hcl, QObject::tr("HCL"),
-                                   triplet(), triplet(360, 200, 100), false) {}
+                                   triplet(), triplet(360, 200, 100), false, 3) {}
 
         triplet from_xyz(const xyz& c) const override {
             const auto lab_c = lab(c);
@@ -299,7 +303,7 @@ inline void info_data::add_info_types() {
     // LAB //////////////////////////////////////////////////////////////////////////////////////////
     struct lab_info : public info_type {
         lab_info() : info_type(info_data_type_t::lab, QObject::tr("LAB"),
-                                   triplet{0, -200, -200}, triplet(100, 200, 200), false) {}
+                                   triplet{0, -200, -200}, triplet(100, 200, 200), false, 3) {}
 
         triplet from_xyz(const xyz& c) const override {
             return lab(c).data();
@@ -314,10 +318,28 @@ inline void info_data::add_info_types() {
         add<lab_info>();
     }
 
+    // LUV //////////////////////////////////////////////////////////////////////////////////////////
+    struct luv_info : public info_type {
+        luv_info() : info_type(info_data_type_t::luv, QObject::tr("LUV"),
+                                   triplet{0, -200, -200}, triplet(100, 200, 200), false, 3) {}
+
+        triplet from_xyz(const xyz& c) const override {
+            return luv(c).data();
+        }
+
+        xyz to_xyz(const triplet& c) const override {
+            return xyz(luv(c));
+        }
+    };
+
+    if(options[index(info_data_type_t::luv)]) {
+        add<luv_info>();
+    }
+
     // OKLAB //////////////////////////////////////////////////////////////////////////////////////////
     struct oklab_info : public info_type {
         oklab_info() : info_type(info_data_type_t::oklab, QObject::tr("okLAB"),
-                                   triplet{0, 0, 0}, triplet(1, 1, 1), false, 3) {}
+                                     triplet{0, 0, 0}, triplet(1, 1, 1), false, 3) {}
 
         triplet from_xyz(const xyz& c) const override {
             const auto rgb_c = c.to_rgb_fast();
@@ -332,7 +354,8 @@ inline void info_data::add_info_types() {
 
     if(options[index(info_data_type_t::oklab)]) {
         add<oklab_info>();
-    }}
+    }
+}
 
 
 } // namespace details

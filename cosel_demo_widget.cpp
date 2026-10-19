@@ -21,7 +21,7 @@ public:
     explicit cosel_demo_widget(QWidget* parent = nullptr);
 
 private:
-    constexpr static bool use_unit_test = false;
+    constexpr static bool use_unit_test = true;
 
     // Unlike QColorDialog, the cosel::select_widget does not hold the currently selected color nor
     // does it signal when it changes. Instead, that functionality is handled by a selected_color

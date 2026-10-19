@@ -18,18 +18,17 @@
 
 namespace cosel {
 
-// Base class that supports gradients that distinguish "source" (logical/linear) positions from
+// Base class that supports gradients that handle "source" (logical/linear) positions and
 // "gradient" (rendered/perceptually uniform) positions.
 //
-// - Source position (0..1): logical position in the original color parameter space (e.g. hue 0.0 =
+// - Source position (0..1): logical position in an original color component (e.g. hue 0.0 =
 //   red, 1/6 = yellow, 2/6 = green, etc.).
 //
-// - Gradient position (0..1): actual position in the generated gradient buffer, which may use
-//   non-linear spacing for better perceptual uniformity.
+// - Gradient position (0..1): knob position over a rendered gradient which may use non-linear
+//   spacing for better perceptual uniformity.
 //
 // Color sliders operate on gradient positions (what the user sees and points to), while
-// application logic works with source positions, (value of color component). The conversion
-// functions allow mapping between the two.
+// application logic works with source positions, (value of color component).
 
 struct gradient_base_t {
     gradient_base_t() = default;

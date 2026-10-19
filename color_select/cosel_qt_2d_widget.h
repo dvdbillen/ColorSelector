@@ -39,7 +39,7 @@ namespace details {
 //      - More consistent with how gradients are handled elsewhere
 //
 // Reasons to set false:
-//      - Adds processing when the saturation changes
+//      - Adds processing when the saturation changes (might be relevant at resolution==1)
 //      - Only truly accurate for the top row
 
 constexpr bool vary_gradient_with_sat() {
@@ -51,7 +51,7 @@ using grad_method_t = hsx_hue_gradient_t<hsv_t>;
 using grad_t = std::shared_ptr<grad_method_t>;
 
 // Limit the S and V ranges that can actually be handled by the control. This avoids a number of
-// issues coping with gray or red that has noise in the blue component.
+// issues coping with gray and also pure red that has noise in the blue component.
 constexpr double hsv_2d_vmin = 1.0/255*8;
 constexpr double hsv_2d_smin = 1.0/255*8;
 

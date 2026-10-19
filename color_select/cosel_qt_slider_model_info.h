@@ -52,8 +52,9 @@ static inline const selector_info_t& get_selector_info(selector_type_t type) {
 enum class twod_type_t : std::int8_t {
     grid,
     ring,
+    info,
 };
-constexpr size_t num_twod_types = 2;
+constexpr size_t num_twod_types = 3;
 
 struct twod_info_t {
     twod_type_t type;
@@ -61,9 +62,10 @@ struct twod_info_t {
 };
 
 static inline const twod_info_t& get_twod_info(size_t type) {
-    static std::array<twod_info_t, num_selector_types> info_vec = {
+    static std::array<twod_info_t, num_twod_types> info_vec = {
             twod_info_t{twod_type_t::grid, QObject::tr("Grid")},
-            twod_info_t{twod_type_t::ring, QObject::tr("Ring")}
+            twod_info_t{twod_type_t::ring, QObject::tr("Ring")},
+            twod_info_t{twod_type_t::info, QObject::tr("Edit")}
     };
 
     assert(type < num_twod_types);

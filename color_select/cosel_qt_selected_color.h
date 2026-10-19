@@ -1,9 +1,10 @@
 // SPDX-License-Identifier: MIT
 // Copyright (c) 2026 David Billen
 
-// Selected color
-
-// Color for selectors is a QObject for use with multiple selection/display components
+// Selected color - QObject for use with multiple selection/display components
+//
+// An instance of this class is required to define the current color for all of the cosel top level
+// widgets, (e.g. as opposed to that color being defined in a top level dialog).
 
 
 #ifndef cosel_qt_selected_color_h

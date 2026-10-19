@@ -6,6 +6,7 @@
 #ifndef cosel_math_h
 #define cosel_math_h
 
+#include <algorithm>
 #include <cmath>
 #include <numbers>
 #include <stdexcept>
@@ -35,7 +36,7 @@ template<class T> constexpr inline T fix(T n)  {
 }
 
 // Compare to zero with epsilon
-static inline constexpr bool iszero(double n) {
+static inline bool iszero(double n) {
     return std::abs(n) < zero_epsilon;
 }
 

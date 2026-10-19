@@ -31,7 +31,7 @@ class slider_label_display : public QLabel {
 public:
     explicit slider_label_display(const QString& label_, QWidget* parent = nullptr) :
         QLabel(label_, parent) {
-        setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+        setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
     }
 };
 
@@ -101,6 +101,7 @@ inline slider_label_edit::slider_label_edit(double display_min, double display_m
     edit->setMinimumWidth(konst::min_edit_width());
     edit->setMaximumWidth(konst::max_edit_width());
     edit->setAlignment(Qt::AlignRight);
+    edit->setTextMargins(0, 0, 2, 0);
 
     // Setup validator
     auto* validator = new QDoubleValidator(-DBL_MAX, DBL_MAX, precision, edit);

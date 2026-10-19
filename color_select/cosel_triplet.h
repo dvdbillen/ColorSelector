@@ -184,11 +184,8 @@ struct alignas(32) triplet {
         return ret;
     }
 
-    [[nodiscard]] triplet mat3_mul(const double m[3][3]) const noexcept { // NOLINT
-        return triplet(
-                   vec::dot(&m[0][0], &comp[0]),
-                   vec::dot(&m[1][0], &comp[0]),
-                   vec::dot(&m[2][0], &comp[0]));
+    [[nodiscard]] triplet mat3_mul(const std::array<triplet, 3>& m) const noexcept { // NOLINT
+        return triplet{dot(m[0]), dot(m[1]), dot(m[2])};
     }
 };
 

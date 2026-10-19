@@ -47,19 +47,6 @@ inline static void generate_gamut_class(const gamut& g, const char* class_name) 
     std::cout << ",\n"
               << "        ";
     print_triplet(g.xyz2rgb_matrix()[2]);
-    std::cout << "\n"
-              << "    };\n"
-              << "    constexpr static triplet cie_r = ";
-    print_triplet(g.cie_red());
-    std::cout << ";\n"
-              << "    constexpr static triplet cie_g = ";
-    print_triplet(g.cie_green());
-    std::cout << ";\n"
-              << "    constexpr static triplet cie_b = ";
-    print_triplet(g.cie_blue());
-    std::cout << ";\n"
-              << "    constexpr static triplet cie_w = ";
-    print_triplet(g.cie_white());
     std::cout << ";\n"
               << "    constexpr static triplet xyz_w = ";
     print_triplet(g.xyz_white());
@@ -101,18 +88,6 @@ inline static void generate_gamut_class(const gamut& g, const char* class_name) 
               << "    }\n"
               << "    constexpr const triplet& luminance_mx() const {\n"
               << "        return lum_mx;\n"
-              << "    }\n"
-              << "    constexpr const triplet& cie_red() const {\n"
-              << "        return cie_r;\n"
-              << "    }\n"
-              << "    constexpr const triplet& cie_green() const {\n"
-              << "        return cie_g;\n"
-              << "    }\n"
-              << "    constexpr const triplet& cie_blue() const {\n"
-              << "        return cie_b;\n"
-              << "    }\n"
-              << "    constexpr const triplet& cie_white() const {\n"
-              << "        return cie_w;\n"
               << "    }\n"
               << "    constexpr const triplet& xyz_white() const {\n"
               << "        return xyz_w;\n"
