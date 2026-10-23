@@ -261,7 +261,6 @@ private:
         return n*resolution;
     }
 
-    using pointi = point<int>;
     using pointf = point<double>;
 
     selected_color_t selection;

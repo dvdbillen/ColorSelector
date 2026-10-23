@@ -7,7 +7,6 @@
 #define cosel_geometry_h
 
 #include <algorithm>
-#include <complex>
 #include <cmath>
 #include <numeric>
 
@@ -33,11 +32,6 @@ public:
     }
     template <typename U> constexpr explicit operator point<U>() const noexcept {
         return point<U>(*this);
-    }
-    // Conversion to/from complex can be implied
-    point(const std::complex<T>& cplx) noexcept : x_(cplx.real()), y_(cplx.imag()) {}
-    operator std::complex<T>() const {
-        return std::complex<T>(x_, y_);
     }
 
     T x() const {
@@ -186,48 +180,11 @@ public:
         require_float();
         return cmulled(point<T>(std::cos(radians), std::sin(radians)));
     }
-    [[nodiscard]] point<T> rotated_around(const point<T>& other, T radians) const {
-        return (*this - other).rotated(radians) + other;
-    }
-    [[nodiscard]] point<T> offseted(T radians, T distance) const {
-        require_float();
-        return *this + point<T>(std::cos(radians), std::sin(radians))*distance;
-    }
-    [[nodiscard]] point<T> rotated_around_to_distance(const point<T>& other, T dist) const {
-        return (*this - other).rotated_to_distance(dist) + other;
-    }
-    [[nodiscard]] point<T> rotated_90() const {
-        return point<T>(-y(), x());
-    }
-    [[nodiscard]] point<T> rotated_neg90() const {
-        return point<T>(y(), -x());
-    }
-    [[nodiscard]] point<T> rotated_90_around(const point<T>& other) const {
-        return (*this - other).rotated_90() + other;
-    }
-    [[nodiscard]] point<T> rotated_neg90_around(const point<T>& other) const {
-        return (*this - other).rotated_neg90() + other;
-    }
-    [[nodiscard]] point<T> rotated_180() const {
-        return point<T>(-x(), -y());
-    }
-    [[nodiscard]] point<T> rotated_180_around(const point<T>& other) const {
-        return (*this - other).rotated_180() + other;
-    }
     [[nodiscard]] point<T> flipped_x() const {
         return point<T>(-x(), y());
     }
     [[nodiscard]] point<T> flipped_y() const {
         return point<T>(x(), -y());
-    }
-    template<typename FLOAT_T>
-    [[nodiscard]] static point<T> at_angle(FLOAT_T angle, FLOAT_T magnitude) {
-        static_assert(std::is_floating_point<FLOAT_T>(),
-                      "Arguments must be floating point");
-
-        const auto x = std::cos(angle)*magnitude;
-        const auto y = std::sin(angle)*magnitude;
-        return point<T>(x, y);
     }
 
 private:
