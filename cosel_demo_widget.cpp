@@ -151,6 +151,8 @@ void cosel_demo_widget::handle_coseldialog() {
     // the resolution is not a multiple of 4.
     select_options.two_d_bordered = cosel::konst::default_2d_bordered();
 
+    // Enable the advanced edit info
+    select_options.show_2d_edit_tab = true;
 
     // Make a dialog and use our widget as the contents.
 

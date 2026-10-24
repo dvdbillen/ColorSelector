@@ -3,7 +3,7 @@
 
 // Parent widget that supports various configurations of color selection controls
 
-// This is the contents of the Qt mock dialog. It can also be used as you would any other widget.
+// This is the contents of the Qt mock dialog. It can also be used directly.
 
 #ifndef cosel_qt_select_widget_h
 #define cosel_qt_select_widget_h
@@ -71,6 +71,9 @@ public:
         // If resolution >= 4 this outlines each color with the bg color. NOTE: When using display
         // scaling on Windows this may create artifacts if the resolution is not a multiple of 4.
         bool two_d_bordered = konst::default_2d_bordered();
+
+        // Show the (advanced) editor tab in the 2D control
+        bool show_2d_edit_tab = false;
 
         options_t() = default;
 
@@ -382,14 +385,27 @@ inline QTabWidget* select_widget::make_2d(twod_type_t type) {
 
     // Create HSV 2d widget
     auto* widget_2d = new twod_selector(selection_, options_.slider_style.rounding,
-            options_.two_d_resolution, options_.two_d_bordered);
+                                        options_.two_d_resolution, options_.two_d_bordered);
 
     // Create HSV ring widget
     auto* ring_widget = new ring_selector(selection_, this);
 
-    // Create info widget
-    info_options_t info_options = { true, false, true, true, true, true, true, false };
-    auto* info_w = new info_widget(selection_, info_options, this);
+    // Create info widget (if selected)
+    info_widget* info_w = nullptr;
+
+    if(options_.show_2d_edit_tab) {
+        info_options_t info_options = {};
+        info_options[index(info_data_type_t::rgb255)] = true;
+        info_options[index(info_data_type_t::rgb100)] = false;
+        info_options[index(info_data_type_t::hsl)] = true;
+        info_options[index(info_data_type_t::hsv)] = true;
+        info_options[index(info_data_type_t::hcl)] = true;
+        info_options[index(info_data_type_t::lab)] = true;
+        info_options[index(info_data_type_t::luv)] = true;
+        info_options[index(info_data_type_t::oklab)] = false;
+
+        info_w = new info_widget(selection_, info_options, this);
+    }
 
     // Add to stack
     auto* stack = new QTabWidget(this);
@@ -400,8 +416,10 @@ inline QTabWidget* select_widget::make_2d(twod_type_t type) {
     info = get_twod_info(twod_type_t::ring);
     stack->addTab(ring_widget, info.name);
 
-    info = get_twod_info(twod_type_t::info);
-    stack->addTab(info_w, info.name);
+    if(info_w != nullptr) {
+        info = get_twod_info(twod_type_t::info);
+        stack->addTab(info_w, info.name);
+    }
 
     stack->setFixedSize(konst::default_2d_size());
     stack->setTabPosition(QTabWidget::South);

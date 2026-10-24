@@ -79,9 +79,8 @@ public:
         return name_;
     }
 
-    // This does not indicate the current state of the data. It indicates whether the type itself
-    // is constrained to the color space gamut (e.g. RGB, HSV, etc..), or can exceed it, (e.g. LAB,
-    // LUV, etc).
+    // This indicates whether the type is constrained to the color space gamut (e.g. RGB, HSV,
+    // etc..), or can exceed it, (e.g. LAB, LUV, etc).
     bool in_gamut() const {
         return in_gamut_;
     }
@@ -186,7 +185,11 @@ private:
 
 inline void info_data::add_info_types() {
 
-    // RGB //////////////////////////////////////////////////////////////////////////////////////////
+    // Define a class derived from info_type (with a default constructor) for each color model
+    // supported. Add it to the info vector if selected.
+
+
+    // RGB (0-100 or 0-255) ////////////////////////////////////////////////////////////////////////
     struct rgb_info : public info_type {
         rgb_info(info_data_type_t type, QString name, double range) :
             info_type(type, std::move(name), triplet(), triplet(range, range, range)),
@@ -224,6 +227,7 @@ inline void info_data::add_info_types() {
         add<rgb100_info>();
     }
 
+
     // HSL //////////////////////////////////////////////////////////////////////////////////////////
     struct hsl_info : public info_type {
         hsl_info() :
@@ -250,6 +254,7 @@ inline void info_data::add_info_types() {
     if(options[index(info_data_type_t::hsl)]) {
         add<hsl_info>();
     }
+
 
     // HSV //////////////////////////////////////////////////////////////////////////////////////////
     struct hsv_info : public info_type {
@@ -278,6 +283,7 @@ inline void info_data::add_info_types() {
         add<hsv_info>();
     }
 
+
     // HCL //////////////////////////////////////////////////////////////////////////////////////////
     struct hcl_info : public info_type {
         hcl_info() : info_type(info_data_type_t::hcl, QObject::tr("HCL"),
@@ -300,6 +306,7 @@ inline void info_data::add_info_types() {
         add<hcl_info>();
     }
 
+
     // LAB //////////////////////////////////////////////////////////////////////////////////////////
     struct lab_info : public info_type {
         lab_info() : info_type(info_data_type_t::lab, QObject::tr("LAB"),
@@ -318,6 +325,7 @@ inline void info_data::add_info_types() {
         add<lab_info>();
     }
 
+
     // LUV //////////////////////////////////////////////////////////////////////////////////////////
     struct luv_info : public info_type {
         luv_info() : info_type(info_data_type_t::luv, QObject::tr("LUV"),
@@ -335,6 +343,7 @@ inline void info_data::add_info_types() {
     if(options[index(info_data_type_t::luv)]) {
         add<luv_info>();
     }
+
 
     // OKLAB //////////////////////////////////////////////////////////////////////////////////////////
     struct oklab_info : public info_type {
