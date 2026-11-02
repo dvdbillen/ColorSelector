@@ -49,7 +49,7 @@ private:
 // Execute the standard QColorDialog
 
 void cosel_demo_widget::handle_qtdialog() {
-    const auto current = cosel::qt_from_rgb(the_color->rgb());
+    const auto current = the_color->qcolor();
     QColorDialog dialog(current, this);
 
     dialog.setOption(QColorDialog::ShowAlphaChannel, true);
@@ -65,7 +65,7 @@ void cosel_demo_widget::handle_qtdialog() {
 // Execute our mock dialog
 
 void cosel_demo_widget::handle_mock_dialog() {
-    const auto current = cosel::qt_from_rgb(the_color->rgb());
+    const auto current = the_color->qcolor();
     cosel::color_dialog dialog(current, this);
 
     // We could also set the extended options as we do below in handle_coseldialog(), but here we

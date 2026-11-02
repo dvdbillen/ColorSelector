@@ -3,8 +3,6 @@
 
 // Color swatch widget
 
-// TODO: More comments
-
 #ifndef cosel_qt_swatch_h
 #define cosel_qt_swatch_h
 
@@ -36,15 +34,19 @@ class color_swatch : public QWidget {
     Q_OBJECT;
 
 public:
-    // Construct with xyz
     explicit color_swatch(const xyz& color_,  double corner_rounding_,
                           bool droppable = true);
 
-    // Construct with rgb
-    explicit color_swatch(const rgb& color_, double corner_rounding_, bool droppable = true) :
+    explicit color_swatch(const rgb& color_, double corner_rounding_,
+                          bool droppable = true) :
         color_swatch(xyz(color_), corner_rounding_, droppable) {}
 
-    // Construct empty
+    explicit color_swatch(const QColor& color_, double corner_rounding_,
+                          bool droppable = true) :
+        color_swatch(xyz(qt_to_rgb(color_)), corner_rounding_, droppable) {
+        alpha_ = color_.alphaF();
+    }
+
     explicit color_swatch(double corner_rounding_, bool droppable = true) :
         color_swatch(rgb(), corner_rounding_, droppable) {
         empty_ = true;

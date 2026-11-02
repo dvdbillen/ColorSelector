@@ -129,7 +129,7 @@ signals:
 inline alpha_slider::alpha_slider(
     gradient_slider::style_options_t options_, double range, double current_, QWidget* parent) :
     QWidget(parent),
-    options(options_.with_height(options_.height/2)),
+    options(options_),
     range_(range),
     current(current_) {
 
@@ -294,10 +294,16 @@ inline void alpha_slider::slider_painter(QPainter* p, [[maybe_unused]] const QRe
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
+/// @brief QWidget that presents an alpha setting slider with gradient.
 class alpha_widget : public alpha_slider {
 public:
+    /// @brief Contrstuct the alpha_widget.
+    /// @param selected_color_t Shared pointer to the selected color
+    /// @param options_ Instance of gradient_slider::style_options_t to control the appearance
+    /// @param range_ Presented range for the alpha, e.g. 100 or 255
+    /// @param oarent Optional QWidget to set as parent
     explicit alpha_widget(const selected_color_t& selection,
-                          gradient_slider::style_options_t options_, double range_, double current_,
+                          gradient_slider::style_options_t options_, double range_,
                           QWidget* parent = nullptr);
 
 private:
@@ -307,8 +313,8 @@ private:
 
 inline alpha_widget::alpha_widget(const selected_color_t& selection,
                                   gradient_slider::style_options_t options_,
-                                  double range_, double current_, QWidget* parent) :
-    alpha_slider(options_, range_, current_, parent),
+                                  double range_, QWidget* parent) :
+    alpha_slider(options_, range_, selection->alpha()*range_, parent),
     selection_(selection),
     id(selection->assign_id()) {
 

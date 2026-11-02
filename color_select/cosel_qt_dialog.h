@@ -26,52 +26,94 @@
 
 namespace cosel {
 
+/// @brief Provides interface compatible with QColorDialog as well as extended interface.
+///
+/// @details This can be used as an exact replacement for QColorDialog or with constructor that
+/// provides more options. This doxygen documentation does not show any of the QColorDialog
+/// definitions since those are already documented by Qt.
+
 class color_dialog : public QDialog {
     Q_OBJECT;
 
+    /// @private
     static constexpr auto ShowAlphaChannel = QColorDialog::ColorDialogOption::ShowAlphaChannel;
+    /// @private
     static constexpr auto NoButtons = QColorDialog::ColorDialogOption::NoButtons;
+    /// @private
     static constexpr auto DontUseNativeDialog = QColorDialog::ColorDialogOption::DontUseNativeDialog;
+    /// @private
     static constexpr auto NoEyeDropperButton = QColorDialog::ColorDialogOption::NoEyeDropperButton;
 public:
     using options_t = select_widget::options_t;
 
     // Qt  compatible interface
 
+    /// @private
     explicit color_dialog(QWidget* parent = nullptr);
+    /// @private
     explicit color_dialog(const QColor& initial, QWidget* parent = nullptr);
+    /// @private
     void setCurrentColor(const QColor& color);
+    /// @private
     QColor currentColor() const;
+    /// @private
     QColor selectedColor() const;
+    /// @private
     void setOption(QColorDialog::ColorDialogOption option, bool on = true);
+    /// @private
     bool testOption(QColorDialog::ColorDialogOption option) const;
+    /// @private
     void setOptions(QColorDialog::ColorDialogOptions options);
+    /// @private
     QColorDialog::ColorDialogOptions options() const;
+    /// @private
     using QDialog::open;
+    /// @private
     void open(QObject* receiver, const char* member);
+    /// @private
     void done(int result) override;
-
+    /// @private
     static QColor getColor(const QColor& initial = Qt::white,
                            QWidget* parent = nullptr,
                            const QString& title = QString(),
                            QColorDialog::ColorDialogOptions options = QColorDialog::ColorDialogOptions());
+    /// @private
     static int customCount();
+    /// @private
     static QColor customColor(int index);
+    /// @private
     static void setCustomColor(int index, QColor color);
+    /// @private
     static QColor standardColor(int index);
+    /// @private
     static void setStandardColor(int index, QColor color);
 
     // Extended interface
 
     constexpr static size_t num_types = num_selector_types;
+
+    /// @brief Constructs dialog with extended options.
+    ///
+    /// @param options An instance of select_widget::options_t.
+    /// @param selection A shared_ptr to a selected_color.
+    /// @param parent Optional parent widget.
     explicit color_dialog(const options_t& options,
                           const selected_color_t& selection, QWidget* parent = nullptr);
+    /// @brief Sets extended options. Must call before showing the dialog.
+    /// @param options An instance of select_widget::options_t.
     void set_cosel_options(const options_t& options);
+    /// @brief Returns extended options.
+    /// @return A const reference to select_widget::options_t.
     const options_t& cosel_options() const;
+    /// @brief Returns shared_ptr to the selected_color used by the dialog. This exists even if the
+    /// QColorDialog compatible constructor was used.
+    /// @return A shared_ptr to a selected_color.
     const selected_color_t& selection() const;
 
 signals:
+    /// @private
     void currentColorChanged(const QColor& color);
+    /// @private
     void colorSelected(const QColor& color);
 
 protected:

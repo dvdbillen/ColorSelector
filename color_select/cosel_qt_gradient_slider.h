@@ -30,58 +30,68 @@ constexpr unsigned gradient_slider_knob_width = 24;
 constexpr unsigned seg_size = 1;
 constexpr unsigned seg_gap = 0;
 
+/// @brief Slider that displays a gradient legend using a custom_slider.
 class gradient_slider : public QWidget {
     Q_OBJECT;
 
 public:
+    /// @brief Struct that contains options for the slider
     struct style_options_t {
-        // Height of slider in device pixels. Clamped to gradient_slider_knob_width.
+        /// Height of slider in device pixels. Clamped to gradient_slider_knob_width.
         int height = konst::default_slider_height();
-        // Set true to make pointer (knob) on top pointing down. Default is pointing up.
+        /// Set true to make pointer (knob) on top pointing down. Default is pointing up.
         bool pointer_top = false;
-        // Corner rounding 0 to 1. Amounts to Qt rounding "absolute size" calculated roughly as:
-        // rounding*height/2
+        /// Corner rounding 0 to 1. Amounts to Qt rounding "absolute size" calculated roughly as:
+        /// rounding*height/2
         double rounding = konst::default_corner_rounding();
-        // Set this false if you want to repurpose this class to just create a gradient slider that
-        // is not in a layout with a label on the left and an editable display value on the right.
+        /// Show label and value.
+        ///
+        /// @details Set this false if you want to repurpose this class to just create a gradient
+        /// slider that is not in a layout with a label on the left and an editable display value on
+        /// the right.
         bool info = true;
-
-        explicit style_options_t(unsigned height_ = konst::default_slider_height(),
-                                 bool pointer_top_ = false,
-                                 double rounding_ = konst::default_corner_rounding(), bool info_ = true) :
-            height(std::max(height_, gradient_slider_knob_width)),
-            pointer_top(pointer_top_),
-            rounding(rounding_),
-            info(info_) {}
-
-        style_options_t with_height(int n) const {
-            return style_options_t(n, pointer_top, rounding, info);
-        }
     };
 
-    // slider_label is normally one character, e.g. "R", "G", "B".
-    // display_min and display_max are the range for the value.
-    // for options_ see style_options_t for details
-    // current_ is the initial position of the slider (using the display range not a normal)
+    /// @brief Construct a gradient slider.
+    /// @param slider_label Normally one character, e.g. "R", "G", "B".
+    /// @param display_min Low range for the display scale
+    /// @param display_max High range for the display scale
+    /// @param options_ Instance of gradient_slider::style_options_t
+    /// @param current_ Initial position of the slider (using the display range not a normal)
+    /// @param parent Optional QWidget to parent the slider
     explicit gradient_slider(QString slider_label, double display_min, double display_max,
                              style_options_t options_, double current_, QWidget* parent = nullptr);
 
-    // All gradient sliders must have a gradient_base_t derived gradient associated with them.
+    /// @brief Associates a gradient_base_t derived gradient with the slider.
+    /// @param grad Shared pointer to a gradient_base_t
+    /// @details All gradient sliders must have a gradient associated with them.
     void set_gradient(const std::shared_ptr<gradient_base_t>& grad);
+
+    /// @brief Returns gradient set with set_gradient().
+    /// @return Shared pointer to a gradient_base_t derived gradient
     const std::shared_ptr<gradient_base_t>& gradient() const {
         return gradient_;
     }
 
+    /// @brief Set the current value.
+    /// @param Value to set. Will be clamped to the display scale
     void set_value(double value) {
         set_value(value, true);
     }
+    /// @brief Return the current value.
+    /// @return The current value
     double value() const {
         return current;
     }
 
-    void change_display_scale(double scale_min, double scale_max) {
-        display_min_ = scale_min;
-        display_max_ = scale_max;
+    /// @brief Change the display scale.
+    /// @param display_min Low range for the display scale
+    /// @param display_max High range for the display scale
+    /// @details This calculates a new value at the same relative position. It does not emit
+    /// a signal.
+    void change_display_scale(double display_min, double display_max) {
+        display_min_ = display_min;
+        display_max_ = display_max;
 
         // TODO: Work out if it would be better to use value_to_normal(current) at the top
         set_value(slider->value(), false);

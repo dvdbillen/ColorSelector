@@ -37,94 +37,144 @@
 
 namespace cosel {
 
-/**
-#@brief Main cosel widget that hosts a collection of controls for selecting a color
+/// @brief Main cosel widget that hosts a collection of controls for selecting a color.
+///
+/// @details You can use this widget directly rather than using the cosel::color_dialog which
+/// implements the Qt QColorDialog interface. The cosel::color_dialog uses a select_widget
+/// privately.
+///
+/// For extendability, the select_widget does not contain the current color or provide a signal
+/// when it changes. Instead, a separate class (cosel::selected_color) is used. The selected_color
+/// is created as a shared_ptr and passed to the constructor of the select_widget.
+///
+/// To retain state settings such as custom colors and the current color selection for multiple
+/// instances of the select_widget a structure that holds the current state is supported
+/// (select_widget::state_t). An instance can be obtained using the state() member function to be
+/// saved and passed to the constructor of a new instance. If the design of your application
+/// doesn't easily support accessing a data member before the select_widget is destroyed, then you
+/// can connect to the state_changed() signal which is emitted each time the state changes. It is
+/// safe to save the contents of the state_t struct accross application sessions.
 
-**/
 class select_widget : public QWidget {
     Q_OBJECT;
 
     constexpr static size_t num_types = num_selector_types;
 public:
+    /// @brief Struct that contains options for the select_widget.
     struct options_t {
-        // Slider style defined in cosel_qt_gradient_slider.h
+        /// Slider style defined in cosel_qt_gradient_slider.h
         gradient_slider::style_options_t slider_style;
 
-        // Enable disable slider types indexed by selector_type_t. If you enable only one slider
-        // the tab control won't appear. There are helper functions in this struct so you don't
-        // have to index this array using enums.
+        /// @brief Enable disable slider types indexed by @ref cosel::selector_type_t.
+        ///
+        /// @details If you enable only one slider the tab control won't appear. There are helper
+        /// functions in this struct so you don't have to index this array using enums.
         std::array<bool, num_types> slider_enables = {true, true, true, false, false};
 
-        // Show an alpha slider. The main swatch will reflect the alpha level.
+        /// Show an alpha slider. The main swatch will reflect the alpha level.
         bool use_alpha = false;
 
-        // Show a screen color picker.
+        /// Show a screen color picker.
         bool use_screen_picker = true;
 
-        // Show the 2D color widgets.
+        /// Show the 2D color widgets.
         bool two_d_widget = true;
 
-        // Resolution of the 2D HSV selector in pixel w/h (square). Clamped 1:32. Set to 1 for
-        // non-segmented selector.
+        /// @brief Resolution of the 2D HSV selector in pixel w/h (square).
+        /// Clamped 1:32. Set to 1 for non-segmented selector.
         int two_d_resolution = konst::default_2d_resolution();
 
-        // If resolution >= 4 this outlines each color with the bg color. NOTE: When using display
-        // scaling on Windows this may create artifacts if the resolution is not a multiple of 4.
+        /// @brief Indicates a border around the segments in the 2D HSV control.
+        ///
+        /// @details If resolution >= 4 this outlines each color with the bg color. NOTE: When
+        /// using display scaling on Windows this may create artifacts if the resolution is not a
+        /// multiple of 4.
         bool two_d_bordered = konst::default_2d_bordered();
 
-        // Show the (advanced) editor tab in the 2D control
+        /// Show the (advanced) editor tab in the 2D control
         bool show_2d_edit_tab = false;
 
         options_t() = default;
 
         // Helpers to simplify setting slider enables
+
+        /// @brief set rgb sliders enabled or disabled.
+        /// @param onoff enabled if true
         void enable_rgb(bool onoff) {
             slider_enables[size_t(selector_type_t::rgb)] = onoff;
         }
+        /// @brief set hsv sliders enabled or disabled.
+        /// @param onoff enabled if true
         void enable_hsv(bool onoff) {
             slider_enables[size_t(selector_type_t::hsv)] = onoff;
         }
+        /// @brief set hsl sliders enabled or disabled.
+        /// @param onoff enabled if true
         void enable_hsl(bool onoff) {
             slider_enables[size_t(selector_type_t::hsl)] = onoff;
         }
+        /// @brief set hsv+ sliders enabled or disabled.
+        /// @param onoff enabled if true
         void enable_hsv2(bool onoff) {
             slider_enables[size_t(selector_type_t::hsv2)] = onoff;
         }
+        /// @brief set hsl+ sliders enabled or disabled.
+        /// @param onoff enabled if true
         void enable_hsl2(bool onoff) {
             slider_enables[size_t(selector_type_t::hsl2)] = onoff;
         }
     };
 
-    // This should only be set by the select_widget. It can be obtained before destroying the class
-    // and passed back to the ctor so that the user opens a dialog with the same active slider
-    // group, (etc), as when they closed it.
+    /// @brief Struct that is used to retain the state of the select widget.
+    ///
+    /// @details The state holds things such as which tabs were current as well as the custom color
+    /// palette. The members should only be set by the default constructor or the select_widget. It
+    /// can be obtained before destroying the class and passed back to the ctor so that the user
+    /// opens a dialog with the same active slider group, (etc), as when they closed it. It is safe
+    /// to store a state_t instance to be used across sessions.
 
     struct state_t {
-        // If the slider_tab is < 0 then the specified inital_type in the select_widget constructor
-        // is used
+        /// If the slider_tab is < 0 then the specified inital_type in the select_widget constructor
+        /// is used
         int slider_tab = -1;
-        // If the twod_tab is < 0 then the specified initial_twod in the select widget constructor
-        // is used
+        /// If the twod_tab is < 0 then the specified initial_twod in the select widget constructor
+        /// is used
         int twod_tab = -1;
-        // The only valid initialization of this is from the palette object
+        /// The only valid initialization of this is from the palette object
         QString custom_colors;
 
         state_t() = default;
     };
 
+    /// @brief Constructor.
+    ///
+    /// @param options Instance of a select_widget::options struct.
+    /// @param initial_type The initial slider group type that is presented. If the state has been
+    /// initialized then this argument is ignored.
+    /// @param initial_twod The initial 2D selector type that is presented. If the state has been
+    /// initialized then this argument is ignored.
+    /// @param state An instance of a state struct that may have been returned by a previous
+    /// instance of the select_widget, or may have simply been constructed (uninitialized).
+    /// @param parent QWidget parent
     select_widget(options_t options, selector_type_t initial_type, twod_type_t initial_twod,
                   selected_color_t selection,
                   state_t state,
                   QWidget* parent = nullptr);
 
+    /// @brief Return the current state.
+    ///
+    /// @details If the select_widget exists after color selection is complete then this can be
+    /// used to save the current state and pass it to a new instance of the widget. See also
+    /// @ref state_changed.
     const state_t& state() const {
         return state_;
     }
 
 signals:
-    // Emitted when state data (from select_widget::state_t) changes. You can save the state in
-    // response to this signal if there's not a clean opportunity to read it before the class
-    // instance goes out of scope.
+    /// @brief Emitted when state data (from select_widget::state_t) changes.
+    ///
+    /// @details You can save the state in response to this signal if there's not a clean
+    /// opportunity to read it before the class instance goes out of scope.
     void state_changed(const cosel::select_widget::state_t& state);
 
 private:
@@ -293,7 +343,7 @@ inline alpha_widget* select_widget::make_alpha_widget() {
         return nullptr;
     }
 
-    return new alpha_widget(selection_, options_.slider_style, 255, 255, this);
+    return new alpha_widget(selection_, options_.slider_style, 255, this);
 }
 
 
@@ -346,7 +396,13 @@ inline palette_widget* select_widget::make_palette_widget() {
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 // Create main swatch that shows current color selection
 inline color_swatch* select_widget::make_swatch() {
-    auto* swatch = new cosel::color_swatch(cosel::xyz(), options_.slider_style.rounding);
+    const auto* the_color_ptr = selection_.get();
+    const auto c = the_color_ptr->xyz();
+    const auto a = the_color_ptr->alpha();
+
+    auto* swatch = new cosel::color_swatch(c, options_.slider_style.rounding);
+    swatch->set_alpha(a);
+
     swatch->setFixedSize(konst::swatch_size());
 
     swatch->setToolTip(tr("Drag and drop"));
@@ -358,7 +414,6 @@ inline color_swatch* select_widget::make_swatch() {
     });
 
     // Sync the swatch to color changes
-    const auto* the_color_ptr = selection_.get();
     connect(the_color_ptr, &cosel::selected_color::changed, this,
     [this, swatch](unsigned id) {
         if(id != swatch_selection_id) {
@@ -366,7 +421,8 @@ inline color_swatch* select_widget::make_swatch() {
         }
     });
 
-    // Sync the swatch to alpha changes
+    // Sync the swatch to alpha changes. Note that the swatch handles alpha even if the dialog does
+    // not.
     connect(the_color_ptr, &cosel::selected_color::alpha_changed, this,
     [this, swatch](unsigned) {
         swatch->set_alpha(selection_->alpha());
@@ -500,7 +556,7 @@ inline QLayout* select_widget::make_top_layout() {
     return top_layout;
 }
 
-// The bottom layout the alpha widget if used else it is nullptr
+// The bottom layout is the alpha widget if used else it is nullptr
 inline QLayout* select_widget::make_bottom_layout() {
     if(!options_.use_alpha) {
         // Currently a bottom layout only used for alpha slider
@@ -509,10 +565,10 @@ inline QLayout* select_widget::make_bottom_layout() {
 
     auto* bottom_layout = new QHBoxLayout();
     bottom_layout->setContentsMargins(0, 0, 0, 0);
-    bottom_layout->addStretch(1);
     bottom_layout->addWidget(alpha, 2, Qt::AlignVCenter);
+    bottom_layout->addStretch(1);
     // TODO: This works out with the test style, but needs to always align if possible
-    bottom_layout->addSpacing(10);
+    // bottom_layout->addSpacing(10);
 
     return bottom_layout;
 }
