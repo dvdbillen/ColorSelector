@@ -3,6 +3,7 @@
 
 // Definitions for each type of color selector group we support
 
+
 /// @file cosel_qt_slider_model_info.h
 /// @brief Definitions for each type of color selector group we support.
 
@@ -15,8 +16,7 @@
 namespace cosel {
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
-/// @public
-/// @enum selector_type_t
+/// @ingroup misc
 /// @brief Selector group types
 enum class selector_type_t : std::int8_t {
     rgb,  ///< RGB selectors
@@ -55,11 +55,12 @@ static inline const selector_info_t& get_selector_info(selector_type_t type) {
 
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
+/// @ingroup misc
 /// @brief 2D selector types
 enum class twod_type_t : std::int8_t {
-    grid,
-    ring,
-    info,
+    grid,  ///<HSV Grid selector with saturation slider
+    ring,  ///<HSV Hue ring with saturarion/value rotating triangle
+    info,  ///<Advanced color model text editor
 };
 constexpr size_t num_twod_types = 3;
 

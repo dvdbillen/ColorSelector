@@ -4,6 +4,10 @@
 // Handle selection of a color from anywhere on the display.
 // Currently this code has no dependency on the rest of the codebase.
 
+
+/// @file cosel_qt_screen_picker.h
+/// @brief Screen picker implementation
+
 #ifndef cosel_qt_screen_picker_h
 #define cosel_qt_screen_picker_h
 
@@ -273,6 +277,16 @@ inline void screen_picker_overlay::keyPressEvent(QKeyEvent* e) {
 }
 } // namespace details
 
+/// @ingroup modal
+/// @brief Select a color from the display
+///
+/// @details Currently the header that implements this function has no dependency on the rest of
+/// the cosel source code. It can be used stand-alone in any Qt 6.x application.
+///
+/// @param container This is NOT the parent widget of the dialog. It is the widget over which the
+/// screen selector dialog will be displayed.
+///
+/// @return The color selected or and empty color if the selection was canceled.
 inline QColor pick_screen_color(QWidget* container) {
     QEventLoop loop;
     details::screen_picker_overlay overlay(loop, container);

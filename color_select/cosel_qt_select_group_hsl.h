@@ -3,6 +3,9 @@
 
 // hsl_selector
 
+/// @file cosel_qt_select_group_hsl
+/// @brief HSL color selector sliders implementation
+
 #ifndef cosel_qt_select_group_hsl_h
 #define cosel_qt_select_group_hsl_h
 
@@ -12,6 +15,7 @@ namespace cosel {
 
 class hsl_selector : public color_selector {
 public:
+
     explicit hsl_selector(selector_type_t type, const selected_color_t& color,
                           const gradient_slider::style_options_t& options_) :
         color_selector(type, color, options_) {

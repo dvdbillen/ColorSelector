@@ -1,9 +1,11 @@
 // SPDX-License-Identifier: MIT
 // Copyright (c) 2026 David Billen
 
-// Parent widget that supports various configurations of color selection controls
-
 // This is the contents of the Qt mock dialog. It can also be used directly.
+
+
+/// @file cosel_qt_select_widget.h
+/// @brief Color selection widget implementation
 
 #ifndef cosel_qt_select_widget_h
 #define cosel_qt_select_widget_h
@@ -65,7 +67,7 @@ public:
         /// Slider style defined in cosel_qt_gradient_slider.h
         gradient_slider::style_options_t slider_style;
 
-        /// @brief Enable disable slider types indexed by @ref cosel::selector_type_t.
+        /// @brief Enable disable slider types indexed by @ref selector_type_t @see @ref misc.
         ///
         /// @details If you enable only one slider the tab control won't appear. There are helper
         /// functions in this struct so you don't have to index this array using enums.

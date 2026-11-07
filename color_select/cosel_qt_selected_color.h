@@ -7,6 +7,9 @@
 // widgets, (as opposed to that color being defined in a top level dialog).
 
 
+/// @file cosel_qt_selected_color.h
+/// @brief Selected color class implementation
+
 #ifndef cosel_qt_selected_color_h
 #define cosel_qt_selected_color_h
 

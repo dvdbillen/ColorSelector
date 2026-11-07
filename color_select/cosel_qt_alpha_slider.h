@@ -6,6 +6,9 @@
 // color selection (alpha_widget).
 
 
+/// @file cosel_qt_alpha_slider.h
+/// @brief Alpha slider implementation
+
 #ifndef cosel_qt_alpha_slider_h
 #define cosel_qt_alpha_slider_h
 

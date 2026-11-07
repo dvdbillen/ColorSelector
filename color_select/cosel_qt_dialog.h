@@ -1,8 +1,9 @@
 // SPDX-License-Identifier: MIT
 // Copyright (c) 2026 David Billen
 
-// Implements mock QColorDialog interface
 
+/// @file cosel_qt_dialog.h
+/// @brief Mock QColorDialog interface implementation
 
 #ifndef cosel_qt_dialog_h
 #define cosel_qt_dialog_h

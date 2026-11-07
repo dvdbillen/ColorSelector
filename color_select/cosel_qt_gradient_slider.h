@@ -1,7 +1,8 @@
 // SPDX-License-Identifier: MIT
 // Copyright (c) 2026 David Billen
 
-// Implements a slider that displays a gradient legend using a custom_slider
+/// @file cosel_qt_gradient_slider.h
+/// @brief Gradient legend custom slider implementation
 
 #ifndef cosel_qt_gradient_slider_h
 #define cosel_qt_gradient_slider_h
@@ -41,8 +42,8 @@ public:
         int height = konst::default_slider_height();
         /// Set true to make pointer (knob) on top pointing down. Default is pointing up.
         bool pointer_top = false;
-        /// Corner rounding 0 to 1. Amounts to Qt rounding "absolute size" calculated roughly as:
-        /// rounding*height/2
+        /// Corner rounding 0 to 1. Matches Qt rounding "absolute size" calculated as:
+        /// rounding*min(width,height)/2
         double rounding = konst::default_corner_rounding();
         /// Show label and value.
         ///

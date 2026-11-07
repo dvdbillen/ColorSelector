@@ -3,6 +3,10 @@
 
 // Color swatch widget
 
+
+/// @file cosel_qt_swatch.h
+/// @brief Swatch class implementation
+
 #ifndef cosel_qt_swatch_h
 #define cosel_qt_swatch_h
 
@@ -30,23 +34,70 @@
 
 namespace cosel {
 
+/// @brief Widget that displays a color
+///
+/// @details The color swatch simply shows a selected color. It supports drag and drop. In all
+/// cases it can be dragged onto a drop destination, but can only be dropped onto if that option is
+/// selected in the constructor.
+///
+/// A color swatch can be 'empty' indicating no selected color.
+///
+/// A color_swatch widget does not use a @ref cosel::selected_color, you must set the color as
+/// needed.
+///
+/// Out-of-gamut color support is facilitated as a potential feature by allowing XYZ values, but
+/// currently cosel does not support out-of-gamut color selection so all colors are clamped to the
+/// colorspace gamut.
+
 class color_swatch : public QWidget {
     Q_OBJECT;
 
 public:
+
+    /// @brief Construct with an xyz color.
+    ///
+    /// @param color_ An XYZ color. Currently out-of-gamut colors are not supported and the value
+    /// is clamped.
+    ///
+    /// @param corner_rounding 0-1 converted to rounding exactly as documented for the sliders in
+    /// @ref gradient_slider::style_options_t.
+    ///
+    /// @param droppable Set true (default) to allow this swatch to be a drop destination.
     explicit color_swatch(const xyz& color_,  double corner_rounding_,
                           bool droppable = true);
 
+    /// @brief Construct with an rgb color.
+    ///
+    /// @param color_ A linear RGB color.
+    ///
+    /// @param corner_rounding 0-1 converted to rounding exactly as documented for the sliders in
+    /// @ref gradient_slider::style_options_t.
+    ///
+    /// @param droppable Set true (default) to allow this swatch to be a drop destination.
     explicit color_swatch(const rgb& color_, double corner_rounding_,
                           bool droppable = true) :
         color_swatch(xyz(color_), corner_rounding_, droppable) {}
 
+    /// @brief Construct with a QColor.
+    ///
+    /// @param color_ A valid QColor
+    ///
+    /// @param corner_rounding 0-1 converted to rounding exactly as documented for the sliders in
+    /// @ref gradient_slider::style_options_t.
+    ///
+    /// @param droppable Set true (default) to allow this swatch to be a drop destination.
     explicit color_swatch(const QColor& color_, double corner_rounding_,
                           bool droppable = true) :
         color_swatch(xyz(qt_to_rgb(color_)), corner_rounding_, droppable) {
         alpha_ = color_.alphaF();
     }
 
+    /// @brief Construct an empty swatch.
+    ///
+    /// @param corner_rounding 0-1 converted to rounding exactly as documented for the sliders in
+    /// @ref gradient_slider::style_options_t.
+    ///
+    /// @param droppable Set true (default) to allow this swatch to be a drop destination.
     explicit color_swatch(double corner_rounding_, bool droppable = true) :
         color_swatch(rgb(), corner_rounding_, droppable) {
         empty_ = true;
@@ -54,51 +105,103 @@ public:
 
     ~color_swatch() override = default;
 
-    void set(const xyz& color_) {
-        rgb_color = rgb(color_).clamped_gamut();
+    /// @brief Set to an rgb color.
+    ///
+    /// @param color_ A linear RGB color value that will be clamped to gamut.
+    void set(const rgb& color_) {
+        rgb_color = color_.clamped_gamut();
         color = qt_from_rgb(rgb_color);
         empty_ = false;
 
         update();
     }
 
+    /// @brief Set to a QColor.
+    ///
+    /// @param color_ A valid QColor
+    void set(const QColor& color_) {
+        color = color_;
+        rgb_color = qt_to_rgb(color_);
+        empty_ = false;
+
+        update();
+    }
+
+    /// @brief Set to an xyz color.
+    ///
+    /// @param color_ An XYZ color. Currently out-of-gamut colors are not supported and the value
+    /// is clamped.
+    void set(const xyz& color_) {
+        set(rgb(color_));
+    }
+
+    /// Set the swatch to 'empty' (no selected color)
     void clear() {
         empty_ = true;
         update();
     }
 
+    /// Get the current value as RGB.
+    ///
+    /// @return A linear rgb value
     rgb get() const {
         return rgb_color;
     }
 
+    /// Determine whether a color is empty.
+    ///
+    /// @return True if no color is selected
     bool empty() const {
         return empty_;
     }
 
+    /// Set an alpha value.
+    ///
+    /// @param n Alpha value 0-1
     void set_alpha(double n) {
         alpha_ = clamp(n);
 
         update();
     }
 
+    /// Return alpha value.
+    ///
+    /// @return Alpha value 0-1
     double alpha() const {
         return alpha_;
     }
 
+    /// Determine if a color is selected.
+    ///
+    /// @return True if the color is selected.
     bool selected() const {
         return selected_;
     }
 
+    /// Determine if a color can be the destination of a drag-and-drop operation.
+    ///
+    /// @return True if the color can be set by dropping another color onto it.
     bool droppable() const {
         return droppable_;
     }
 
+    /// Set color as selected.
+    ///
+    /// @param yesno Color will be selected if true.
+    /// @details The cosel code does not currently use selection functionality for anything. It is
+    /// available for application use and the border of the swatch should indicate selection status.
     void select(bool yesno) {
         if(selected_ != yesno) {
             selected_ = yesno;
             update();
         }
     }
+
+signals:
+    /// Emitted when the swatch is clicked.
+    void clicked();
+    /// Emitted when the swatch is the destination of a drag-and-drop operation.
+    void dropped();
 
 protected:
     void paintEvent([[maybe_unused]] QPaintEvent* event) override;
@@ -132,9 +235,6 @@ private:
 
     QPixmap icon_pixmap();
     const QPixmap& checkerboard_pixmap();
-signals:
-    void clicked();
-    void dropped();
 };
 
 inline std::weak_ptr<QImage> color_swatch::icon_image_ref;
