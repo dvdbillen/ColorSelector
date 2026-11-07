@@ -3,6 +3,9 @@
 
 // rgb_selector
 
+/// @file cosel_qt_select_group_rgb.h
+/// @brief RGB color selector sliders implementation
+
 #ifndef cosel_qt_select_group_rgb_h
 #define cosel_qt_select_group_rgb_h
 
@@ -83,11 +86,14 @@ private:
 } // namespace details
 
 
+/// @brief Widget that manages sliders for color selection using RGB
 class rgb_selector : public color_selector {
 public:
-    explicit rgb_selector(selector_type_t type, const selected_color_t& color,
+    /// @param color A shared_ptr to a selected_color object
+    /// @param options_ An instance of gradient_slider::style_options_t
+    explicit rgb_selector(const selected_color_t& color,
                           const gradient_slider::style_options_t& options_) :
-        color_selector(type, color, options_) {
+        color_selector(selector_type_t::rgb, color, options_) {
         initialize();
     }
 

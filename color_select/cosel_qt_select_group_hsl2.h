@@ -3,6 +3,9 @@
 
 // hsl2_selector
 
+/// @file cosel_qt_select_group_hsl2.h
+/// @brief HSL+ color selector sliders implementation
+
 #ifndef cosel_qt_select_group_hsl2_h
 #define cosel_qt_select_group_hsl2_h
 
@@ -10,11 +13,14 @@
 
 namespace cosel {
 
+/// @brief Widget that manages sliders for color selection using HSL+
 class hsl2_selector : public color_selector {
 public:
-    explicit hsl2_selector(selector_type_t type, const selected_color_t& color,
+    /// @param color A shared_ptr to a selected_color object
+    /// @param options_ An instance of gradient_slider::style_options_t
+    explicit hsl2_selector(const selected_color_t& color,
                            const gradient_slider::style_options_t& options_) :
-        color_selector(type, color, options_) {
+        color_selector(selector_type_t::hsl2, color, options_) {
         initialize();
     }
 

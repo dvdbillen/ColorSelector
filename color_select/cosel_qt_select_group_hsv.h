@@ -3,6 +3,10 @@
 
 // hsv_selector for both hsv and hsv2
 
+
+/// @file cosel_qt_select_group_hsv.h
+/// @brief HSV and HSV+ color selector sliders implementation
+
 #ifndef cosel_qt_select_group_hsv_h
 #define cosel_qt_select_group_hsv_h
 
@@ -13,21 +17,25 @@ namespace cosel {
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
+/// @brief Widget that manages sliders for color selection using HSV or HSV+
 template<typename HSV_T>
 class hsv_selector : public color_selector {
 public:
-    explicit hsv_selector(selector_type_t type, const selected_color_t& color,
-                          const gradient_slider::style_options_t& options_) :
-        color_selector(type, color, options_) {
+    /// @param color A shared_ptr to a selected_color object
+    /// @param options_ An instance of gradient_slider::style_options_t
+    explicit hsv_selector(const selected_color_t& color,
+                          const gradient_slider::style_options_t& options_)
+        : color_selector(std::is_same_v<HSV_T, hsv2>
+                             ? selector_type_t::hsv2
+                             : selector_type_t::hsv,
+                         color, options_)
+    {
         initialize();
     }
 
 private:
     static_assert(std::is_same_v<HSV_T, hsv> || std::is_same_v<HSV_T, hsv2>,
                   "T must be either hsv or hsv2");
-
-    // Hue gradient is an hsx_hue_gradient_t<HSV_T>
-
     using hue_gradient_t = hsx_hue_gradient_t<HSV_T>;
 
     // Sat gradient is a linear gradient

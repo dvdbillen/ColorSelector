@@ -25,8 +25,12 @@ namespace cosel {
 /// @brief QObject based class for use with multiple color selection components.
 ///
 /// @details An instance of this class is required to define the current color for all of the cosel
-/// top level widgets, (as opposed to that color being defined in a top level dialog). Most of the
-/// cosel widgets accept a shared_ptr to a selected_color class in their constructor.
+/// top level widgets.
+///
+/// Typically color selection dialogs or widgets contain the current color selection as a class
+/// member. In cosel the current color selection is this discrete object. All of the classes that
+/// set or respond to the current color selection are initialized with a shared_ptr to a single
+/// instance of a selected_color.
 
 class selected_color : public QObject {
     Q_OBJECT;

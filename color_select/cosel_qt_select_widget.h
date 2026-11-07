@@ -307,27 +307,27 @@ inline color_selector* select_widget::make_type(selector_type_t type, QWidget* p
 
     switch(type) {
         case selector_type_t::rgb: {
-            selector = new rgb_selector(type, selection_, options_.slider_style);
+            selector = new rgb_selector(selection_, options_.slider_style);
             break;
         }
 
         case selector_type_t::hsl: {
-            selector = new hsl_selector(type, selection_, options_.slider_style);
+            selector = new hsl_selector(selection_, options_.slider_style);
             break;
         }
 
         case selector_type_t::hsv: {
-            selector = new hsv_selector<hsv>(type, selection_, options_.slider_style);
+            selector = new hsv_selector<hsv>(selection_, options_.slider_style);
             break;
         }
 
         case selector_type_t::hsl2: {
-            selector = new hsl2_selector(type, selection_, options_.slider_style);
+            selector = new hsl2_selector(selection_, options_.slider_style);
             break;
         }
 
         case selector_type_t::hsv2: {
-            selector = new hsv_selector<hsv2>(type, selection_, options_.slider_style);
+            selector = new hsv_selector<hsv2>(selection_, options_.slider_style);
             break;
         }
     }
