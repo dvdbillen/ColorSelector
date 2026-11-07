@@ -3,6 +3,10 @@
 
 // Palette widget
 
+
+/// @file cosel_qt_palette_h
+/// @brief Palette and palette widget implementation
+
 #ifndef cosel_qt_palette_h
 #define cosel_qt_palette_h
 
@@ -32,41 +36,68 @@ namespace cosel {
 constexpr size_t palette_cols = 6;
 constexpr size_t palette_standard_rows = 4;
 constexpr size_t palette_custom_rows = 4;
+/// @ingroup misc
+/// @brief Constant specifying the number of standard colors
 constexpr size_t palette_standard_size = palette_standard_rows*palette_cols;
+/// @ingroup misc
+/// @brief Constant specifying the number of custom colors
 constexpr size_t palette_custom_size = palette_custom_rows*palette_cols;
 constexpr size_t palette_rows = palette_standard_rows + palette_custom_rows;
+/// @ingroup misc
+/// @brief Constant specifying the total number of colors in a palette
 constexpr size_t palette_size = palette_standard_size + palette_custom_size;
 
 
 // Palette data representation. The widget is defined below it.
 
+/// @brief Palette class
+///
+/// @details The color_palette class is not a singleton, but is not a general purpose class. It is
+/// designed for use by the palette_widget class and the cosel dialog with a hard coded number of
+/// custom and standard color.
+
 class color_palette {
 public:
 
-    // For color space support the colors are stored as both xyz and rgb values.
+    /// @brief Palette color class
+    /// @details For color space support the colors are stored as both xyz and rgb values.
     struct color_t {
+        /// Construct an empty (unused) color.
         color_t() = default;
+        /// Construct with xyz
+        /// @param color_ an XYZ color.
         explicit color_t(const xyz& color_) :
             color_(color_),
             display_color_(rgb(color_).clamped_gamut()),
             used_(true) {}
+        /// Construct with rgb
+        /// @param color_ an RGB color.
         explicit color_t(const rgb& color_) :
             color_(xyz(color_)),
             display_color_(color_),
             used_(true) {}
 
+        /// Return color
+        /// @return An XYZ color.
         const xyz& color() const {
             return color_;
         }
 
+        /// Return RGB color
+        /// @return An RGB color that is clamped to gamut even if the class was constructed with
+        /// an out-of-gamut XYZ color.
         const rgb& display_color() const {
             return display_color_;
         }
 
+        /// Indicates whether or not the color is used.
+        /// @return true if the color was initialized with an empty constructor or the clear()
+        /// function was used.
         const bool& used() const {
             return used_;
         }
 
+        /// Set the color to unused.
         void clear() {
             used_ = false;
         }
@@ -76,33 +107,44 @@ public:
         bool used_ = false;
     };
 
+    /// Consstruct a palette
+    ///
+    /// @details The palette is always large enough to contain all of the standard and custom
+    /// colors of sizes palette_standard_size and palette_custom_size. The custom colors are at
+    /// offset palette_standard_size. On construction, the standard colors are initialized with
+    /// hard-coded values, and the custom colors are empty.
     color_palette();
 
+    /// Return a definition of the custom colors as a string.
+    /// @return A QString that represents a definition of all the custom colors. It can be saved
+    /// and the custom colors can be restored with the set_custom_color_string() member.
     [[nodiscard]] QString custom_color_string() const;
-    // Returns false if there's a conversion or parsing error.
+
+
+    /// Set the custom colors from a string.
+    /// @param palstr A QString obtained using the custom_color_string() member.
+    /// @return false if there is an error parsing the string.
     bool set_custom_color_string(const QString& palstr);
 
+    /// Return a color_t by index.
+    /// @param index in the range 0 to palette_size - 1.
+    /// @return A color_t.
     const color_t& get(size_t index) const {
         return colors[std::min(index, colors.size() - 1)];
     }
+    /// Set a palette color to an xyz value.
+    /// @param index in the range 0 to palette_size - 1.
+    /// @param color an XYZ color.
     void set(size_t index, const xyz& color) {
         colors[std::min(index, colors.size() - 1)] = color_t(color);
     }
+    /// Set a palette color to an rgb value.
+    /// @param index in the range 0 to palette_size - 1.
+    /// @param color an RGB color.
     void set(size_t index, const rgb& color) {
         colors[std::min(index, colors.size() - 1)] = color_t(color);
     }
 
-    size_t cols() const {
-        return palette_cols;
-    }
-
-    size_t rows() const {
-        return palette_rows;
-    }
-
-    size_t size() const {
-        return palette_size;
-    }
 
 private:
     std::vector<color_t> colors;
@@ -228,34 +270,60 @@ inline bool color_palette::set_custom_color_string(const QString& palstr) {
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-// Palette widget
+/// @brief Palette widget
+///
+/// @details A palette_widget is designed for use by the the cosel dialog with a hard coded number
+/// of custom and standard color.
 
 class palette_widget : public QWidget {
     Q_OBJECT;
 public:
-
+    /// Construct a palette_widget specifying an existing palette.
+    /// @param palette A shared_ptr to a color_palette.
+    /// @param selection_ A shared_ptr to a selected_color.
+    /// @param corner_rounding_ A corner rounding value that works as defined for the
+    /// gradient_slider::style_options_t class.
     explicit palette_widget(const std::shared_ptr<color_palette>& palette,
                             selected_color_t selection_, double corner_rounding_);
 
+    /// Construct a palette_widget that creates its own palette.
+    /// @param selection_ A shared_ptr to a selected_color.
+    /// @param corner_rounding_ A corner rounding value that works as defined for the
+    /// gradient_slider::style_options_t class.
     explicit palette_widget(selected_color_t selection_, double corner_rounding_) :
         palette_widget(std::make_shared<color_palette>(), std::move(selection_), corner_rounding_) {}
 
+    /// Return the associated palette.
+    /// @return A constant reference to the color_palette.
     const color_palette& palette() const {
         return *palette_.get();
     }
 
+    /// Return the palette size.
+    /// @return The palette size. This value is defined in a constant but this function exists
+    /// anyway to remain flexible.
     size_t size() const {
-        return palette_->size();
+        return palette_size;
     }
 
+    /// Return a string representation of the custom colors.
+    /// @return A QString that represents a definition of all the custom colors. See @ref
+    /// color_palette::custom_color_string().
     [[nodiscard]] QString custom_color_string() const {
         return palette_->custom_color_string();
     }
 
+    /// Set the custom colors from a string.
+    /// @param palstr A QString obtained using the custom_color_string() member. See @ref
+    /// color_palette::set_custom_color_string().
+    /// @return false if there is an error parsing the string.
     bool set_custom_color_string(const QString& palstr);
 
 signals:
-    // Not emitted if you changed it yourself using set()
+
+    /// @public
+    /// @brief Signal emitted when the custom palette changes, typically as the result of a
+    /// drag-and-drop.
     void custom_palette_changed();
 
 private:
@@ -307,8 +375,6 @@ inline void palette_widget::init() {
 
     auto* standard_layout = new QGridLayout();
     auto* custom_layout = new QGridLayout();
-
-    assert(palette_->size() == palette_size);
 
     for(unsigned i = 0; i < palette_standard_size; ++i) {
         const auto& c = palette_->get(i);
