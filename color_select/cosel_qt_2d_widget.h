@@ -3,6 +3,9 @@
 
 // 2D HSV color control
 
+/// @file cosel_qt_2d_widget.h
+/// @brief 2D HSV grid widget implementation
+
 #ifndef cosel_qt_2d_widget_h
 #define cosel_qt_2d_widget_h
 
@@ -57,8 +60,8 @@ constexpr double hsv_2d_smin = 1.0/255*8;
 
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-// Class that renders the 2D pixmap. The render_image function makes it a duck type that is used
-// with a throttled_pixmap class handled by selector_2d
+// Class that renders the 2D pixmap. The render_image function uses it as a duck type with a
+// throttled_pixmap class handled by selector_2d
 
 struct render_2d {
     // s is the hsv 's' level
@@ -405,8 +408,21 @@ inline void selector_2d::paintEvent([[maybe_unused]] QPaintEvent* event) {
 // This class is a parent to the selector_2d and is the one used by the application. It pairs the
 // selector_2d with a saturation slider.
 
+/// @brief 2D HSV color selector
+/// @details This color selector actually uses the cosel type HSV+. It can be presented as either
+/// a conventional 2D high resolution color selector, or a lower resolution palette of easier to
+/// identify color options (default).
+///
+/// The grid shows H on the x axis and V on the y axis. S is controlled using a slider.
 class twod_selector : public QWidget {
 public:
+    /// @param color_ A shared_ptr to a selected_color.
+    /// @param corner_rounding Corner rounding for the slider as in used in
+    /// @ref gradient_slider::style_options_t.
+    /// @param resolution Number of pixels (width and height) used for each color option. This
+    /// should be 1 or a multiple of 4 under Windows for clean rendering.
+    /// @param bordered If the resolution exceeds 1 then this option controls whether or not each
+    /// color selection is separated with a background colored border.
     explicit twod_selector(const selected_color_t& color_, double corner_rounding,
                                 int resolution, bool bordered);
 

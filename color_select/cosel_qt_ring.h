@@ -3,6 +3,9 @@
 
 // Implement HSV selection "ring" widget
 
+/// @file cosel_qt_ring.h
+/// @brief HSV selection ring widget implementation
+
 #ifndef cosel_qt_ring_h
 #define cosel_qt_ring_h
 
@@ -32,8 +35,14 @@
 
 namespace cosel {
 
+/// @brief HSV selection ring widget
+/// @details Presents a circular hue legend with a triangle inside. The triangle can be rotated to
+/// select a hue and reflects the S and V levels for the selected hue in its gradient. A dot can be
+/// positioned inside the triangle to specify S and V.
 class ring_selector : public QWidget {
 public:
+    /// @param selection A shared_ptr to a selected_color.
+    /// @param parent_ Parent QWidget pointer (or nullptr if top level).
     explicit ring_selector(const selected_color_t& selection, QWidget* parent_);
 
     ~ring_selector() = default;

@@ -100,8 +100,13 @@ public:
     /// @param parent Optional parent widget.
     explicit color_dialog(const options_t& options,
                           const selected_color_t& selection, QWidget* parent = nullptr);
+
     /// @brief Sets extended options. Must call before showing the dialog.
     /// @param options An instance of select_widget::options_t.
+
+    /// @details This overwrites all options including those set with the QColorDialog compatible
+    /// interface. If you would like to preserve existing options, first obtain a copy of them using
+    /// the cosel_options() member then modify only the settings that you would like to change.
     void set_cosel_options(const options_t& options);
     /// @brief Returns extended options.
     /// @return A const reference to select_widget::options_t.
