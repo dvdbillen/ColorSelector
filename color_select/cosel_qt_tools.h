@@ -207,57 +207,6 @@ static inline QRectF real(const QRect& r) {
     return QRectF(real(r.topLeft()), real(r.size()));
 }
 
-////////////////////////////////////////////////////////////////////////////////////////////////////
-// The following all convert geometry to/from the device pixel ratio of a specified widget. They
-// are useful for finding coordinates in pixmaps that are set to a 1:1 pixel ratio regardless of
-// the pixel ratio of the widget that renders them.
-//
-// Functions that "unscale" convert from scaled size (widget) to 1:1 pixel size (pixmap)
-//
-// Functions that "rescale" convert a 1:1 pixel size (pixmap) to the scaled size (widget)
-
-static inline qreal unscaled(const QWidget* widget, qreal n_scaled) {
-    return n_scaled/widget->devicePixelRatioF();
-}
-static inline qreal rescaled(const QWidget* widget, qreal n_1_to_1) {
-    return n_1_to_1*widget->devicePixelRatioF();
-}
-static inline int unscaled(const QWidget* widget, int n_scaled) {
-    return std::roundl(unscaled(widget, qreal(n_scaled)));
-}
-static inline int rescaled(const QWidget* widget, int n_1_to_1) {
-    return std::roundl(rescaled(widget, qreal(n_1_to_1)));
-}
-
-static inline QSizeF unscaled(const QWidget* widget, const QSizeF& size_scaled) {
-    const auto rat = widget->devicePixelRatioF();
-    return QSizeF(size_scaled.width()/rat, size_scaled.height()/rat);
-}
-static inline QSize unscaled(const QWidget* widget, const QSize& size_scaled) {
-    return round(unscaled(widget, real(size_scaled)));
-}
-static inline QSizeF rescaled(const QWidget* widget, const QSizeF& size_1_to_1) {
-    const auto rat = widget->devicePixelRatioF();
-    return QSizeF(size_1_to_1.width()*rat, size_1_to_1.height()*rat);
-}
-static inline QSize rescaled(const QWidget* widget, const QSize& size_1_to_1) {
-    return round(rescaled(widget, real(size_1_to_1)));
-}
-
-static inline QPointF unscaled(const QWidget* widget, const QPointF& point_scaled) {
-    const auto rat = widget->devicePixelRatioF();
-    return QPointF(point_scaled.x()/rat, point_scaled.y()/rat);
-}
-static inline QPoint unscaled(const QWidget* widget, const QPoint& point_scaled) {
-    return round(unscaled(widget, real(point_scaled)));
-}
-static inline QPointF rescaled(const QWidget* widget, const QPointF& point_1_to_1) {
-    const auto rat = widget->devicePixelRatioF();
-    return QPointF(point_1_to_1.x()*rat, point_1_to_1.y()*rat);
-}
-static inline QPoint rescaled(const QWidget* widget, const QPoint& point_1_to_1) {
-    return round(rescaled(widget, real(point_1_to_1)));
-}
 
 
 }

@@ -103,8 +103,9 @@ private:
         assert(slider != nullptr);
         const auto w = slider->width() - slider->knob_size().width();
         const auto h = slider->knob_size().height();
-        const auto pixel_size = QSize(w, h);
-        return(rescaled(this, pixel_size));
+        const auto dpr = devicePixelRatioF();
+        const auto pixel_size = QSizeF(w*dpr, h*dpr);
+        return round(pixel_size);
     }
 
     // Function to render the contents of the custom_slider.
@@ -254,9 +255,10 @@ inline void alpha_slider::slider_painter(QPainter* p, [[maybe_unused]] const QRe
     }
 
     // Render alpha legend
-    QRect real_r(QPoint(slider->knob_size().width()/2, 0),
-                 unscaled(this, QSize(alpha_pixmap.size())));
-
+    const auto dpr = devicePixelRatioF();
+    const auto sizef = real(alpha_pixmap.size());
+    const auto unscaled = QSizeF(sizef.width()/dpr, sizef.height()/dpr);
+    QRect real_r(QPoint(slider->knob_size().width()/2, 0), round(unscaled));
 
     p->drawPixmap(real_r.x(), real_r.y(), alpha_pixmap);
 
@@ -272,8 +274,8 @@ inline void alpha_slider::slider_painter(QPainter* p, [[maybe_unused]] const QRe
     if(options.rounding > 0) {
         // Round to integer to match rounding in generated legend
         const auto round_linesf = options.rounding*(alpha_pixmap.height());
-        const auto round_lines = std::lround(unscaled(this, round_linesf)*.5);
-        const auto radius = double(round_lines);
+        const auto round_lines = round_linesf/devicePixelRatioF();
+        const auto radius = round_lines/2;
         p->drawRoundedRect(outline_rect, radius, radius);
     } else {
         p->drawRect(outline_rect);

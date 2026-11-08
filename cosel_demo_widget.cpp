@@ -68,11 +68,18 @@ void cosel_demo_widget::handle_mock_dialog() {
     const auto current = the_color->qcolor();
     cosel::color_dialog dialog(current, this);
 
-    // We could also set the extended options as we do below in handle_coseldialog(), but here we
-    // are demonstrating plug-in replacement for QColorDialog.
-
     dialog.setOption(QColorDialog::ShowAlphaChannel, true);
     dialog.setOption(QColorDialog::DontUseNativeDialog, false);
+
+    // Example of using the extended options as well as the Qt options. (We don't really do it here
+    // because we'd like the Qt dialog and mock dialog to demonstrate the exact same options)...
+    //
+    // // Copy the existing options
+    // auto ex_options = dialog.cosel_options();
+    // // Modify
+    // ex_options.slider_style.rounding = 1;
+    // // Write back
+    // dialog.set_cosel_options(ex_options);
 
     if(dialog.exec() == QDialog::Accepted) {
         the_color->set_qcolor(dialog.selectedColor(), -1);
@@ -170,7 +177,7 @@ void cosel_demo_widget::handle_coseldialog() {
     // selected as well as changes to custom colors. It is not required to use this signal. If the
     // widget is still accessible after a selection is complete then you can read the state from
     // the class instance. In this demo code however, the widget is going to be parented by the
-    // dialog and deleted after exec(). We won't have that oppotunity.
+    // dialog and deleted after exec(). We won't have that opportunity.
     connect(selector, &cosel::select_widget::state_changed,
     this, [this](const cosel::select_widget::state_t& state) {
         cosel_state = state;
