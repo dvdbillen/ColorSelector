@@ -3,7 +3,9 @@
 
 // Misc Qt helpers
 
-// TODO: This needs to be pruned especially the unscale/rescale stuff which is barely used
+
+/// @file cosel_qt_tools.h
+/// @brief Qt utilitiy functions used by cosel
 
 #ifndef cosel_qt_tools_h
 #define cosel_qt_tools_h
@@ -91,24 +93,30 @@ static inline QPoint geo(const point<int>& pt) {
 
 // Convert Qt point type to ours
 static inline point<qreal> geo(const QPointF& pt) {
-    return point<qreal>(pt.x(), pt.y());
+    return point<double>(pt.x(), pt.y());
 }
 static inline point<int> geo(const QPoint& pt) {
     return point<int>(pt.x(), pt.y());
 }
-
 
 // Return QColor with specified alpha
 static inline QColor with_alpha(const QColor& c, int alpha) {
     return QColor(c.red(), c.green(), c.blue(), alpha);
 }
 
-// Return our rgb type from QColor
+/// @ingroup utilities
+/// @brief Return a cosel rgb type from QColor
+/// @param c a const reference to a QColor
+/// @return is a linear rgb color as used by cosel
 static inline rgb qt_to_rgb(const QColor& c) {
     return rgb::from_bits<8>(c.red(), c.green(), c.blue());
 }
 
-// Return QColor from our rgb type
+/// @ingroup utilities
+/// @brief Return QColor from cosel rgb type
+/// @param c a const reference to a linear rgb color as used by cosel
+/// @param alpha is an alpha value for the QColor in range 0..1
+/// @return is an instance of a QColor
 static inline QColor qt_from_rgb(const rgb& c, float alpha = 1) {
     const auto adjusted = c.to_output();
     QColor ret;
@@ -154,7 +162,6 @@ static inline QBrush qt_brush(const rgb& c, float alpha = 1) {
     return QBrush(qt_from_rgb(c, alpha));
 }
 
-
 // Convert QSizeF to integer with fast truncation
 static inline QSize trunc(const QSizeF& sz) {
     return QSize(static_cast<int>(sz.width()), static_cast<int>(sz.height()));
@@ -199,7 +206,6 @@ static inline QPointF real(const QPoint& pt) {
 static inline QRectF real(const QRect& r) {
     return QRectF(real(r.topLeft()), real(r.size()));
 }
-
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 // The following all convert geometry to/from the device pixel ratio of a specified widget. They
@@ -252,6 +258,7 @@ static inline QPointF rescaled(const QWidget* widget, const QPointF& point_1_to_
 static inline QPoint rescaled(const QWidget* widget, const QPoint& point_1_to_1) {
     return round(rescaled(widget, real(point_1_to_1)));
 }
+
 
 }
 
