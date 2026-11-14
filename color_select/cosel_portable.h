@@ -14,13 +14,4 @@
 #define NOALIAS_REF __restrict
 #endif
 
-/**
-
-@defgroup utilities Utility functions
-@defgroup modal Modal functions
-@defgroup misc Constants or enums
-
-
-**/
-
 #endif

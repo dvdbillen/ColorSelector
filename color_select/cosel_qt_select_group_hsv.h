@@ -18,6 +18,7 @@ namespace cosel {
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /// @brief Widget that manages sliders for color selection using HSV or HSV+
+/// @tparam HSV_T Must be either hsv to select a normal HSV color, or hsv2 to select using HSV+.
 template<typename HSV_T>
 class hsv_selector : public color_selector {
 public:

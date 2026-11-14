@@ -3,6 +3,10 @@
 
 // Handles data storage and conversions for info widget
 
+
+/// @file cosel_qt_info.h
+/// @brief Defines data for the info_widget class
+
 #ifndef cosel_qt_info_h
 #define cosel_qt_info_h
 
@@ -22,15 +26,18 @@
 
 namespace cosel {
 
+/// @ingroup misc
+/// @brief Info widget types
+/// @see info_options_t
 enum class info_data_type_t : std::int8_t {
-    rgb255,
-    rgb100,
-    hsl,
-    hsv,
-    hcl,
-    lab,
-    luv,
-    oklab,
+    rgb255,     ///< RGB in range 0-255
+    rgb100,     ///< RGB in range 0-100
+    hsl,        ///< HSL
+    hsv,        ///< HSV
+    hcl,        ///< HCL
+    lab,        ///< LAB
+    luv,        ///< LUV
+    oklab,      ///< OKLAB
 
     count
 };
@@ -40,6 +47,9 @@ static inline size_t index(info_data_type_t n) {
     return size_t(n);
 }
 
+/// @ingroup misc
+/// @brief Vector of bools corresponding to the types in info_data_type_t
+/// @see info_data_type_t
 using info_options_t = std::array<bool, info_num_types>;
 
 

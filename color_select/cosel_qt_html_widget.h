@@ -3,6 +3,10 @@
 
 // Implements Qt widget that displays/edits sRGB HTML
 
+
+/// @file cosel_qt_html_widget.h
+/// @brief HTML text edit widget implementation
+
 #ifndef cosel_qt_html_widget_h
 #define cosel_qt_html_widget_h
 
@@ -22,9 +26,16 @@
 
 namespace cosel {
 
+/// @brief QWidget that allows entry of HTML (6 digit hex) colors
+///
+/// @details The HTML widget supports input and output of 6 digit hex colors (HTML). The specified
+/// color is always sRGB regardless of what color space cosel is using.
 class html_widget : public QWidget {
     Q_OBJECT;
 public:
+    /// Construct an HTML widget
+    /// @param selection is a shared_ptr to a cosel::selected_color.
+    /// @param parent is an optional pointer to a QWidget to use as the parent to this one.
     explicit html_widget(selected_color_t selection, QWidget* parent = nullptr) :
         QWidget(parent),
         id(selection->assign_id()),

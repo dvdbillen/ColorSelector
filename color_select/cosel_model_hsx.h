@@ -603,10 +603,7 @@ private:
 
         // Calc H
 
-        // Use LUV polar coordinate at gamuts edge. The lgamut angle_to_hue function contrives it
-        // so that the primaries and secondaries line up with conventional HSL to be familiar in
-        // usage if not entirely compatible
-
+        // Use LUV polar coordinate at gamuts edge.
         const auto angle = std::atan2(luv_c.v(), luv_c.u());
         const auto h_ = luvinfo.angle_to_hue(angle);
 

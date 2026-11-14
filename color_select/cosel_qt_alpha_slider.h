@@ -302,7 +302,7 @@ inline void alpha_slider::slider_painter(QPainter* p, [[maybe_unused]] const QRe
 /// @brief QWidget that presents an alpha setting slider with gradient.
 class alpha_widget : public alpha_slider {
 public:
-    /// @brief Contrstuct the alpha_widget.
+    /// @brief Construct the alpha_widget.
     /// @param selected_color_t Shared pointer to the selected color
     /// @param options_ Instance of gradient_slider::style_options_t to control the appearance
     /// @param range_ Presented range for the alpha, e.g. 100 or 255

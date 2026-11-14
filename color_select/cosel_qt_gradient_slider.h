@@ -32,13 +32,16 @@ constexpr unsigned seg_size = 1;
 constexpr unsigned seg_gap = 0;
 
 /// @brief Slider that displays a gradient legend using a custom_slider.
+///
+/// @details This class is normally used as part of a set of sliders and has doxygen documentation
+/// only to define the @ref gradient_slider::style_options_t.
 class gradient_slider : public QWidget {
     Q_OBJECT;
 
 public:
     /// @brief Struct that contains options for the slider
     struct style_options_t {
-        /// Height of slider in device pixels. Clamped to gradient_slider_knob_width.
+        /// Height of slider in device pixels. Can't be less than gradient_slider_knob_width.
         int height = konst::default_slider_height();
         /// Set true to make pointer (knob) on top pointing down. Default is pointing up.
         bool pointer_top = false;
@@ -53,43 +56,30 @@ public:
         bool info = true;
     };
 
-    /// @brief Construct a gradient slider.
-    /// @param slider_label Normally one character, e.g. "R", "G", "B".
-    /// @param display_min Low range for the display scale
-    /// @param display_max High range for the display scale
-    /// @param options_ Instance of gradient_slider::style_options_t
-    /// @param current_ Initial position of the slider (using the display range not a normal)
-    /// @param parent Optional QWidget to parent the slider
+    // slider_label is normally one character, e.g. "R", "G", "B".
+    // display_min is low range for the display scale
+    // isplay_max is high range for the display scale
+    // options_ is an instance of gradient_slider::style_options_t
+    // current_ is the initial position of the slider (using the display range not a normal)
     explicit gradient_slider(QString slider_label, double display_min, double display_max,
                              style_options_t options_, double current_, QWidget* parent = nullptr);
 
-    /// @brief Associates a gradient_base_t derived gradient with the slider.
-    /// @param grad Shared pointer to a gradient_base_t
-    /// @details All gradient sliders must have a gradient associated with them.
+    // Associatea a gradient_base_t derived gradient with the slider. All gradient sliders must
+    // have a gradient associated with them.
     void set_gradient(const std::shared_ptr<gradient_base_t>& grad);
 
-    /// @brief Returns gradient set with set_gradient().
-    /// @return Shared pointer to a gradient_base_t derived gradient
     const std::shared_ptr<gradient_base_t>& gradient() const {
         return gradient_;
     }
 
-    /// @brief Set the current value.
-    /// @param Value to set. Will be clamped to the display scale
     void set_value(double value) {
         set_value(value, true);
     }
-    /// @brief Return the current value.
-    /// @return The current value
     double value() const {
         return current;
     }
 
-    /// @brief Change the display scale.
-    /// @param display_min Low range for the display scale
-    /// @param display_max High range for the display scale
-    /// @details This calculates a new value at the same relative position. It does not emit
-    /// a signal.
+    // This calculates a new value at the same relative position. It does not emit a signal.
     void change_display_scale(double display_min, double display_max) {
         display_min_ = display_min;
         display_max_ = display_max;

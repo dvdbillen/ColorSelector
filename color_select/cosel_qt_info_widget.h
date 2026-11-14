@@ -3,6 +3,10 @@
 
 // Implements Qt widget that displays/edits color types as text
 
+
+/// @file cosel_qt_info_widget.h
+/// @brief Info widget class implementation
+
 #ifndef cosel_qt_info_widget_h
 #define cosel_qt_info_widget_h
 
@@ -24,9 +28,20 @@
 
 namespace cosel {
 
+/// @brief Advanced color data entry
+/// @details Defines a data grid for manually viewing and entering color model values. Currently
+/// this is the only support for entering potentially out-of-gamut colors.
+
 class info_widget : public QWidget {
     Q_OBJECT;
 public:
+    /// @brief Construct an info_widget
+    ///
+    /// @param selection is a shared_ptr to a cosel::selected_color.
+    /// @param info_options_t is an array of bools corresponding to the constants defined in
+    /// info_data_type_t (defined in @ref misc). A corresponding true value causes the info type
+    /// to appear in the grid.
+    /// @param parent is an optional pointer to a QWidget to use as the parent to this one.
     explicit info_widget(selected_color_t selection,
                          const info_options_t& options, QWidget* parent = nullptr) :
         QWidget(parent),

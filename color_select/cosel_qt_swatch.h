@@ -37,7 +37,7 @@ namespace cosel {
 /// @brief Widget that displays a color
 ///
 /// @details The color swatch simply shows a selected color. It supports drag and drop. In all
-/// cases it can be dragged onto a drop destination, but can only be dropped onto if that option is
+/// cases it can be the source of a drag operation, but can only be a drop target if that option is
 /// selected in the constructor.
 ///
 /// A color swatch can be 'empty' indicating no selected color.
@@ -62,9 +62,9 @@ public:
     /// @param corner_rounding 0-1 converted to rounding exactly as documented for the sliders in
     /// @ref gradient_slider::style_options_t.
     ///
-    /// @param droppable Set true (default) to allow this swatch to be a drop destination.
+    /// @param drop_target Set true (default) to allow this swatch to be a drop destination.
     explicit color_swatch(const xyz& color_,  double corner_rounding_,
-                          bool droppable = true);
+                          bool drop_target = true);
 
     /// @brief Construct with an rgb color.
     ///
@@ -73,10 +73,10 @@ public:
     /// @param corner_rounding 0-1 converted to rounding exactly as documented for the sliders in
     /// @ref gradient_slider::style_options_t.
     ///
-    /// @param droppable Set true (default) to allow this swatch to be a drop destination.
+    /// @param drop_target Set true (default) to allow this swatch to be a drop destination.
     explicit color_swatch(const rgb& color_, double corner_rounding_,
-                          bool droppable = true) :
-        color_swatch(xyz(color_), corner_rounding_, droppable) {}
+                          bool drop_target = true) :
+        color_swatch(xyz(color_), corner_rounding_, drop_target) {}
 
     /// @brief Construct with a QColor.
     ///
@@ -85,10 +85,10 @@ public:
     /// @param corner_rounding 0-1 converted to rounding exactly as documented for the sliders in
     /// @ref gradient_slider::style_options_t.
     ///
-    /// @param droppable Set true (default) to allow this swatch to be a drop destination.
+    /// @param drop_target Set true (default) to allow this swatch to be a drop destination.
     explicit color_swatch(const QColor& color_, double corner_rounding_,
-                          bool droppable = true) :
-        color_swatch(xyz(qt_to_rgb(color_)), corner_rounding_, droppable) {
+                          bool drop_target = true) :
+        color_swatch(xyz(qt_to_rgb(color_)), corner_rounding_, drop_target) {
         alpha_ = color_.alphaF();
     }
 
@@ -97,9 +97,9 @@ public:
     /// @param corner_rounding 0-1 converted to rounding exactly as documented for the sliders in
     /// @ref gradient_slider::style_options_t.
     ///
-    /// @param droppable Set true (default) to allow this swatch to be a drop destination.
-    explicit color_swatch(double corner_rounding_, bool droppable = true) :
-        color_swatch(rgb(), corner_rounding_, droppable) {
+    /// @param drop_target Set true (default) to allow this swatch to be a drop destination.
+    explicit color_swatch(double corner_rounding_, bool drop_target = true) :
+        color_swatch(rgb(), corner_rounding_, drop_target) {
         empty_ = true;
     }
 
@@ -181,7 +181,7 @@ public:
     /// Determine if a color can be the destination of a drag-and-drop operation.
     ///
     /// @return True if the color can be set by dropping another color onto it.
-    bool droppable() const {
+    bool drop_target() const {
         return droppable_;
     }
 
@@ -240,9 +240,9 @@ private:
 inline std::weak_ptr<QImage> color_swatch::icon_image_ref;
 
 inline color_swatch::color_swatch(const xyz& color_, double corner_rounding_,
-                                  bool droppable) :
+                                  bool drop_target) :
     empty_(false),
-    droppable_(droppable),
+    droppable_(drop_target),
     corner_rounding(corner_rounding_),
     mime_type(QStringLiteral("cosel/x-cosel-color-rgb16")) {
 
@@ -252,7 +252,7 @@ inline color_swatch::color_swatch(const xyz& color_, double corner_rounding_,
     std::tie(bg, fg) = get_bg_fg_colors(this);
     fg = with_alpha(fg, 128);
 
-    setAcceptDrops(droppable);
+    setAcceptDrops(drop_target);
 }
 
 inline void color_swatch::paintEvent([[maybe_unused]] QPaintEvent* event) {
