@@ -202,8 +202,8 @@ inline color_palette::color_palette() :
 
 inline QString color_palette::custom_color_string() const {
     const auto comma = QStringLiteral(",");
-    const auto newline = QStringLiteral("\n");
-    const auto empty = QStringLiteral("empty\n");
+    const auto newline = QStringLiteral("|");
+    const auto empty = QStringLiteral("empty|");
 
     QString palstr;
 
@@ -227,7 +227,7 @@ inline bool color_palette::set_custom_color_string(const QString& palstr) {
     assert(colors.size() == palette_size);
 
     const auto comma = QStringLiteral(",");
-    const auto newline = QStringLiteral("\n");
+    const auto newline = QStringLiteral("|");
     const auto empty = QStringLiteral("empty");
 
     QStringList lines = palstr.split(newline);

@@ -55,7 +55,7 @@ namespace cosel {
 /// saved and passed to the constructor of a new instance. If the design of your application
 /// doesn't easily support accessing a data member before the select_widget is destroyed, then you
 /// can connect to the state_changed() signal which is emitted each time the state changes. It is
-/// safe to save the contents of the state_t struct accross application sessions.
+/// safe to save the contents of the state_t struct across application sessions.
 
 class select_widget : public QWidget {
     Q_OBJECT;
@@ -129,13 +129,25 @@ public:
 
     /// @brief Struct that is used to retain the state of the select widget.
     ///
-    /// @details The state holds things such as which tabs were current as well as the custom color
-    /// palette. The members should only be set by the default constructor or the select_widget. It
-    /// can be obtained before destroying the class and passed back to the ctor so that the user
-    /// opens a dialog with the same active slider group, (etc), as when they closed it. It is safe
-    /// to store a state_t instance to be used across sessions.
+    /// @details The state holds which tabs were current as well as the custom color palette. The
+    /// members should only be set by a constructor or the select_widget. It can be obtained before
+    /// destroying the class and passed back to the ctor so that the user opens a dialog with the
+    /// same active slider group, (etc), as when they closed it. It is safe to store a state_t
+    /// instance to be used across sessions.
 
-    struct state_t {
+    class state_t {
+        friend class select_widget;
+        friend class color_dialog;
+    public:
+        state_t() = default;
+        /// Construct specifying a string
+        /// @param state_as_string A string that must have been returned by to_string()
+        explicit state_t(const QString& state_as_string);
+        /// Return the state as a string
+        /// @return A string that can be used to construct a new state. It contains no special
+        /// characters
+        QString to_string() const;
+    private:
         /// If the slider_tab is < 0 then the specified inital_type in the select_widget constructor
         /// is used
         int slider_tab = -1;
@@ -145,7 +157,6 @@ public:
         /// The only valid initialization of this is from the palette object
         QString custom_colors;
 
-        state_t() = default;
     };
 
     /// @brief Constructor.
@@ -573,6 +584,34 @@ inline QLayout* select_widget::make_bottom_layout() {
     // bottom_layout->addSpacing(10);
 
     return bottom_layout;
+}
+
+inline select_widget::state_t::state_t(const QString& state_as_string) {
+    const auto newline = QStringLiteral("*");
+
+    QStringList lines = state_as_string.split(newline);
+    const auto count = lines.size();
+
+    if(count > 0) {
+        slider_tab = lines[0].toInt();
+    }
+
+    if(count > 1) {
+        twod_tab = lines[1].toInt();
+    }
+
+    if(count > 2) {
+        custom_colors = lines[2];
+    }
+}
+
+inline QString select_widget::state_t::to_string() const {
+    const auto newline = QStringLiteral("*");
+
+    QString slider_tab_str = QString(QStringLiteral("%1")).arg(slider_tab, 0, 'd');
+    QString twod_tab_str = QString(QStringLiteral("%1")).arg(twod_tab, 0, 'd');
+
+    return slider_tab_str + newline + twod_tab_str + newline + custom_colors;
 }
 
 

@@ -440,7 +440,6 @@ inline select_widget* color_dialog::make_widget()  {
         state() = st;
         // See comment above about the custom colors state/palette handling.
         palette().set_custom_color_string(st.custom_colors);
-
     });
 
     w->setMinimumWidth(640);

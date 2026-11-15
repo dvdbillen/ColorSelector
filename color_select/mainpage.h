@@ -38,13 +38,6 @@ by all widgets that participate in the color selection using a shared_ptr to a s
 selected_color object to be passed to their constructor.
 
 
-<strong>State Data</strong>
-
-It is a nice feature for the color selection controls to appear in the state the user left them
-the last time they closed the dialog.
-
-
-
 
 @section api_sec API Reference
 
@@ -65,6 +58,7 @@ the full API documentation.
 
 @page Widgets
 @ingroup toplevel
+- cosel::select_widget: A widget that contains all other (selected) top level widgets
 - cosel::rgb_selector: Sliders for setting a color in RGB
 - cosel::hsv_selector: Sliders for setting a color in HSV (or HSV+)
 - cosel::hsl_selector: Sliders for setting a color in HSL
