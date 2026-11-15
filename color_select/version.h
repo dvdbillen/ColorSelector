@@ -1,0 +1,6 @@
+#pragma once
+
+#define COSEL_VERSION_STRING "0.1.0"
+#define COSEL_VERSION_MAJOR  0
+#define COSEL_VERSION_MINOR  1
+#define COSEL_VERSION_PATCH  0

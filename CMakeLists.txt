@@ -46,7 +46,7 @@ if(CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME)
         unit_test.h
     )
 
-    qt_add_executable(ColorSelectorDemo
+    qt_add_executable(ColorSelectorDemo WIN32
         ${DEMO_SOURCES}
         ${DEMO_HEADERS}
         ${COLOR_SELECT_SOURCES}

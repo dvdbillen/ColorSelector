@@ -143,7 +143,7 @@ inline void info_widget::add_row(QGridLayout* grid_layout, info_type_t& item) {
     row.label->setMinimumWidth(konst::min_label_width());
     row.label->setMaximumWidth(konst::min_label_width());
     row.label->setText(item.name());
-    row.label->setAlignment(Qt::AlignCenter);
+    row.label->setAlignment(Qt::AlignLeft);
     grid_layout->addWidget(row.label, row_number, 0, 1, 1);
 
 

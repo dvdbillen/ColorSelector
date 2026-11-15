@@ -119,6 +119,7 @@ Backup*/
 Backup*.xml
 Backup*.txt
 CMakePresets.json
+release.sh
 
 # Profile-guided optimization
 *.pgc
