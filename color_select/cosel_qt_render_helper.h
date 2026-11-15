@@ -155,7 +155,7 @@ inline static QPixmap render_pointer(QWidget* widget, const QRect* kr, bool poin
         p.setPen(pen);
         p.setBrush(QColor(255, 255, 255, 255));
         p.setRenderHint(QPainter::Antialiasing);
-        p.drawPolygon(pointer_polygon.data(), pointer_polygon.size());
+        p.drawPolygon(pointer_polygon.data(), int(pointer_polygon.size()));
     }
 
     image = image.scaled(pointer_size.width()/2, pointer_size.height()/2,

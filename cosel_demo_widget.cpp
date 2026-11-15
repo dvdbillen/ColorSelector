@@ -56,7 +56,7 @@ void cosel_demo_widget::handle_qtdialog() {
     dialog.setOption(QColorDialog::DontUseNativeDialog, false);
 
     if(dialog.exec() == QDialog::Accepted) {
-        the_color->set_qcolor(dialog.selectedColor(), -1);
+        the_color->set_qcolor(dialog.selectedColor(), 0);
     }
 }
 
@@ -82,7 +82,7 @@ void cosel_demo_widget::handle_mock_dialog() {
     // dialog.set_cosel_options(ex_options);
 
     if(dialog.exec() == QDialog::Accepted) {
-        the_color->set_qcolor(dialog.selectedColor(), -1);
+        the_color->set_qcolor(dialog.selectedColor(), 0);
     }
 }
 

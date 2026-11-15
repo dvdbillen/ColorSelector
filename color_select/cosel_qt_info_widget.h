@@ -107,10 +107,10 @@ private:
     void add_row(QGridLayout* grid_layout, info_type_t& item);
     void handle_color_change();
 
-    void set_error(unsigned index, const xyz& color);
+    void set_error(size_t index, const xyz& color);
 };
 
-inline void info_widget::set_error(unsigned int index, const xyz& color) {
+inline void info_widget::set_error(size_t index, const xyz& color) {
     auto& item = data.get(index);
 
     if(!item.in_gamut()) {

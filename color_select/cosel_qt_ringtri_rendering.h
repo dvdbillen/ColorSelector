@@ -194,7 +194,6 @@ inline void hue_triangle::render_image(QImage& image) const noexcept {
 
                 if(min_w < edge_threshold) {
                     // Handle edge fade
-                    const auto min_w = std::min({w0, w1, w2});
                     const auto normalized_dist = min_w/edge_threshold;
                     auto alpha = clamp(normalized_dist*edge_smooth_scale);
                     alpha = alpha*alpha*(3.0f - 2*alpha);

@@ -27,7 +27,7 @@
 
 namespace cosel {
 
-/// @brief Provides interface compatible with QColorDialog as well as extended interface.
+/// @brief Provides interface compatible with QColorDialog as well as extended interface
 ///
 /// @details This can be used as an exact replacement for QColorDialog or with constructor that
 /// provides more options. This doxygen documentation does not show any of the QColorDialog
@@ -196,7 +196,7 @@ inline void color_dialog::setCurrentColor(const QColor& color) {
 
     // This notifies any classes using our selection class. That includes this class which will
     // emit the Qt signal.
-    selection_->set_qcolor(color, -1);
+    selection_->set_qcolor(color, 0);
 }
 
 inline QColor color_dialog::currentColor() const {

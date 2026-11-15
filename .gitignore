@@ -118,6 +118,7 @@ _UpgradeReport_Files/
 Backup*/
 Backup*.xml
 Backup*.txt
+CMakePresets.json
 
 # Profile-guided optimization
 *.pgc

@@ -48,7 +48,7 @@ static inline QImage make_gradient_image(const std::vector<rgb>& gradient, int h
 
     const auto segment_fill = segment_width - segment_gap;
     const auto segment_offset = segment_gap/2;
-    const int width = gradient.size()*segment_width;
+    const int width = int(gradient.size()*segment_width);
     QImage image(width, height, QImage::Format_RGBA8888);
     image.fill(qRgba(0, 0, 0, 0));
 

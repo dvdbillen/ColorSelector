@@ -428,7 +428,7 @@ public:
 
 private:
     void showEvent([[maybe_unused]] QShowEvent* event) override {
-        handle_color_change(-1);
+        handle_color_change(0);
     }
 
     details::selector_2d* selector = nullptr;
@@ -501,7 +501,7 @@ inline twod_selector::twod_selector(const selected_color_t& color_,
         }
     });
 
-    handle_color_change(-1);
+    handle_color_change(0);
 
     auto* grouplayout = new QVBoxLayout();
     grouplayout->setContentsMargins(0, 0, 0, 0);

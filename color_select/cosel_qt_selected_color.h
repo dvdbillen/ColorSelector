@@ -63,6 +63,7 @@ public:
     /// @details This helps classes to avoid comparing floating points values in order to ignore
     /// changes made by themselves. It is specified when setting a color value and is contained in
     /// the changed signal.
+    /// @note An ID value of 0 is never assigned allowing 0 to be used as "no ID".
     ///
     /// @return An unsigned integer that is unique to the application.
     unsigned assign_id() {
