@@ -92,6 +92,8 @@ docbook/
 *.sdf
 *.VC.db
 *.VC.VC.opendb
+*.VC.db-shm
+*.VC.db-wal
 ipch/
 *.ipch
 *.tlog
@@ -100,6 +102,32 @@ ipch/
 *.log
 *.recipe
 *.FileListAbsolute.txt
+*.binlog
+*.dmp
+*.sln.ide
+*.cachefile
+*.rsuser
+*.pidb
+*.svclog
+*.scc
+*.vssscc
+*.vspscc
+UpgradeLog*.XML
+UpgradeLog*.htm
+_UpgradeReport_Files/
+Backup*/
+Backup*.xml
+Backup*.txt
+
+# Profile-guided optimization
+*.pgc
+*.pgd
+*.pgft
+*.pgio
+*.psess
+*.vsp
+*.vspx
+*.sap
 
 # Build output directories
 [Dd]ebug/
@@ -115,6 +143,13 @@ build-*/
 *-build/
 *-debug/
 *-release/
+
+# Test / coverage results
+TestResults/
+*.trx
+*.coverage
+*.coveragexml
+*.coverage.coverage
 
 # =============================================================================
 # CMake
