@@ -9,9 +9,9 @@
 //    - HSL+ (hsl2) that is not standard. The L component is as in LUV and the saturation ranges
 //      from none to the most possible for the selected hue in the gamut. The H value is not
 //      consistent with the other HSx models.
-//    - HSB+ (hsv2) that is not standard. The S component is modified to produce a saturation level
-//      derived from LUV. This has a much more consistent saturation appearance for different hues
-//      than the conventional gamma space calculation.
+//    - HSV+ (hsv2) that is not standard. The S component is modified to produce a saturation level
+//      derived from LUV. This has a more consistent saturation appearance for different hues than
+//      the conventional gamma space calculation.
 //
 // All the classes use normals for all three components. Scaling is handled by UI.
 
