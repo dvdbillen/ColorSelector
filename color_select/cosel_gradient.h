@@ -385,10 +385,11 @@ public:
         return gradient_.empty();
     }
 
-    // The color should be at the max brightness
+    // Specified color will be normalized
     void set_color(const rgb& color_) {
-        if(color_ != color) {
-            color = color_;
+        const auto normalized = color_.normalized();
+        if(normalized != color) {
+            color = normalized;
             set_ranges();
             resize(gradient_.size());
         }

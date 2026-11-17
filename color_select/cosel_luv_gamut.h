@@ -23,9 +23,9 @@ public:
     // Returns outer edge of gamut at L at the same angle as uv
     uv_t gamut_max(const uv_t& uv) const noexcept;
 
-    // Convert a HUE value to a uv angle
+    // Convert a HUE value to a uv angle with red = 0
     double hue_to_angle(double hue) const noexcept;
-    // Convert a uv angle to a HUE value
+    // Convert a uv angle to a HUE value with 0 = red
     double angle_to_hue(double angle) const noexcept;
 
     // L value certain to contain the full gamut.
@@ -38,13 +38,14 @@ public:
         return safe_L_;
     }
 
-    // Polar C value used as starting point to find gamut edge
+    // Polar C (chroma) value used as starting point to find gamut edge
     constexpr double safe_C() const {
         return safe_C_;
     }
 
     // TODO: This is color space dependent and instantiated statically which adds another component
-    // to the static dependency on color spaces. Find a better way.
+    // to the static dependency on color spaces. The static data will need to move to the gamut or
+    // something to support runtime selected color spaces.
     static const luv_gamut& instance() {
         static luv_gamut inst_;
         return inst_;
@@ -71,6 +72,7 @@ inline luv_gamut::luv_gamut() noexcept {
     const auto y = L_to_y(safe_L_);
 
     const auto& gamut = color_space().gamut();
+    // Vector that contains the luminance of r, g, and b
     const auto& lums = gamut.luminance_mx();
 
     // Get RGB in LUV coordinates at safe_L

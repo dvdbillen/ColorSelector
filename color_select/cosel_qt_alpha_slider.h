@@ -36,6 +36,9 @@
 
 namespace cosel {
 
+// This is the slider. The alpha_widget, (defined below), is the top level widget that integrates it
+// with a selected_color
+
 class alpha_slider : public QWidget {
     Q_OBJECT;
 

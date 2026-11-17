@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 // Copyright (c) 2026 David Billen
 
-// General math helpers
+// General math helpers used by cosel
 
 #ifndef cosel_math_h
 #define cosel_math_h
@@ -127,7 +127,7 @@ inline constexpr T modulus(T n, T range) {
     return n - range*std::floor(n/range);
 }
 
-// This is like modulus but is easier to read and a little faster for the common 1.0 case
+// This is like modulus but is easier to read and a little faster for our common 1.0 case
 template<typename T>
 inline constexpr T mod1(T n) {
     check_float<T>();
