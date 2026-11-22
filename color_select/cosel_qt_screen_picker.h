@@ -34,7 +34,6 @@ namespace details {
 // This is a small, invisible widget that tracks the mouse and stays beneath it. It allows the
 // picker to maintain a crosshair cursor and prevents click pass-through on secondary display
 // monitors.
-constexpr int block_widget_size = 33;
 class mouse_block_widget : public QWidget {
 public:
     mouse_block_widget() {
@@ -60,6 +59,7 @@ public:
         show();
     }
 private:
+    static constexpr int block_widget_size = 33;
     QTimer timer;
     QPoint last_pos;
 };
@@ -69,7 +69,7 @@ private:
 // specified container widget is contained in.
 class screen_picker_overlay : public QWidget {
 public:
-    explicit screen_picker_overlay(QEventLoop& event_loop_, QWidget* container);
+    explicit screen_picker_overlay(QEventLoop* event_loop_, QWidget* container);
     QColor selection() const {
         return selection_;
     }
@@ -90,7 +90,7 @@ private:
     void stop();
 
     // Passed to ctor so this class can stop the event loop
-    QEventLoop& event_loop;
+    QEventLoop* event_loop = nullptr;
     // Current selection
     QColor selection_ = QColor(0,0,0);
     // Rectamgle of specified container widget
@@ -109,7 +109,7 @@ private:
     QPoint last_sample;
 };
 
-inline screen_picker_overlay::screen_picker_overlay(QEventLoop& event_loop_, QWidget* container) :
+inline screen_picker_overlay::screen_picker_overlay(QEventLoop* event_loop_, QWidget* container) :
     QWidget(nullptr),
     event_loop(event_loop_) {
     QScreen* screen = container->screen();
@@ -136,7 +136,7 @@ inline screen_picker_overlay::screen_picker_overlay(QEventLoop& event_loop_, QWi
         windowHandle()->setScreen(screen);
     }
 
-    // TODO: My understanding is showFullScreen is not reliable on all versions of Linux
+    // TODO: My understanding is that showFullScreen is not reliable on all versions of Linux
     showFullScreen();
 
     setGeometry(screen->geometry());
@@ -176,7 +176,7 @@ inline void screen_picker_overlay::stop() {
     QGuiApplication::restoreOverrideCursor();
     releaseMouse();
     releaseKeyboard();
-    event_loop.exit();
+    event_loop->exit();
 }
 
 inline void screen_picker_overlay::paintEvent([[maybe_unused]] QPaintEvent* event) {
@@ -224,7 +224,7 @@ inline QColor screen_picker_overlay::sample_at(const QPoint& global_pos) {
         return screen_shot.pixelColor(x, y);
     }
 
-    // Pos is outside start screen. Take sameple from screen.
+    // Pos is outside start screen. Take sample from screen.
 
     const auto screen = QGuiApplication::screenAt(global_pos);
 
@@ -263,9 +263,13 @@ inline void screen_picker_overlay::mouseMoveEvent([[maybe_unused]] QMouseEvent* 
 
 inline void screen_picker_overlay::mousePressEvent(QMouseEvent* e) {
     if(e->button() == Qt::LeftButton) {
+        const auto click_pos = QCursor::pos();
         blocker.reset();
-        selection_ = sample_at(QCursor::pos());
-        stop();
+        
+        QTimer::singleShot(20, [this, click_pos]() {
+            selection_ = sample_at(click_pos);
+            stop();
+            });
     }
 }
 
@@ -289,7 +293,7 @@ inline void screen_picker_overlay::keyPressEvent(QKeyEvent* e) {
 /// @return The color selected or and empty color if the selection was canceled.
 inline QColor pick_screen_color(QWidget* container) {
     QEventLoop loop;
-    details::screen_picker_overlay overlay(loop, container);
+    details::screen_picker_overlay overlay(&loop, container);
     loop.exec();
     return overlay.selection();
 }
