@@ -139,6 +139,6 @@ In HSV+ the 'H' and 'V' sliders are compatible with HSV, but the 'S' slider dete
 ### Advanced Applications
 Cosel does not hard-code the color space. Currently it can be built with several that are included and accommodates easily creating new ones.
 
-However, at this time there is no support for dynamically selectable color spaces, as it adds much to the code injecting the color space into function arguments and I can't predict that there would be a lot of interest in this capability (which would likely also include profile handling).
+However, at this time there is no support for dynamically selectable color spaces. It adds much to the code by injecting the color space into function arguments, and I can't predict that there would be a lot of interest in this capability (which would likely also require profile handling for some platforms).
 
-If you are someone with interest in using Cosel in an application that supports selection of a color-space then contact me.
+If you have interest in using Cosel in an application that supports selection of a color-space then contact me.
