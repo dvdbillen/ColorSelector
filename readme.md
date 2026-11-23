@@ -1,34 +1,10 @@
 # Cosel
 
-> **Status: Early / WIP**  
-
-> This project is functional but not yet ready for general use.  
-
-> It is largely undocumented, the included demo is only a temporary placeholder, and it has so far only been tested on Windows (not yet on Linux or macOS).  
-
-> The demo program is known to have build issues on some platforms.
-
-
-
-## Overview
-
 Cosel is a set of color selection classes for Qt that can be used independently, within a customizable widget, or as a drop-in replacement for `QColorDialog`.
-
-
 
 Cosel is color-science aware, allowing for greater functionality than purely RGB-based selectors.
 
-
-
-## Dependencies
-
-- Qt 6.x
-
-- C++17 or higher (demo requires C++20)
-
-
-
-## Features
+### Features
 
 - All `QColorDialog` features (screen picker, custom palette, HTML entry, etc.)
 
@@ -49,6 +25,108 @@ Cosel is color-science aware, allowing for greater functionality than purely RGB
 - 2D HSV+ color grid selector (optional)
 
 - Drag-and-drop support for custom palettes, etc.
+
+### Adding Cosel to your application
+##### Inclusion
+Cosel is header-only code. Adding to an existing Qt project is simply a matter of including the headers. 
+##### Dependencies
+Cosel is dependent on Qt version 6.6 (or later) and C++ 17 (or later). The demo app depends on C++ 20.
+##### Compiler settings
+The only known requirement for the compiler is to avoid options that sacrifice floating point precision for performance, such as **-ffast-math** on GNU compatible compilers.
+
+
+---
+
+## Using the Qt Compatible Dialog
+Here's an overview of replacing the Qt dialog. For more details see the demo application or generate the Doxygen documentation.
+
+```
+#include "color_select/cosel_qt_dialog.h"
+
+QColor choose_color(const QColor current_color) {
+	// Just replace QColorDialog with cosel::color_dialog
+	cosel::color_dialog dialog(current, this);
+
+	// All options are supported
+    dialog.setOption(QColorDialog::ShowAlphaChannel, true);
+
+	// Execute the dialog
+    if(dialog.exec() == QDialog::Accepted) {
+         return dialog.selectedColor();
+    }
+    
+    return current_color;
+}
+
+```
+
+
+You can set additional cosel options as well:
+
+
+```
+#include "color_select/cosel_qt_dialog.h"
+
+QColor choose_color(const QColor current_color) {
+	// Replace QColorDialog with cosel::color_dialog
+	cosel::color_dialog dialog(current, this);
+
+	// Set some options using the Qt interface 
+    dialog.setOption(QColorDialog::ShowAlphaChannel, true);
+    
+    // Set some cosel specifc options also
+    
+    // Copy existing settings (if you need to avoid writing over Qt settings)
+    auto extra_options = dialog.cosel_options();
+    
+    // Modify them
+    extra_options.slider_style.rounding = 1.0;  // Sausage sliders
+    extra_options.show_2d_edit_tab = true;      // Show advanced edit tab
+    
+    // Set the modified options
+    dialog.set_cosel_options(extra_options);
+    
+
+	// Execute the dialog
+    if(dialog.exec() == QDialog::Accepted) {
+         return dialog.selectedColor();
+    }
+    
+    return current_color;
+}
+
+```
+
+## Using individual components
+Most of the color selection widgets inside the dialog can be used in an application individually. These are documented in the Doxygen documentation, (which must be generated).
+
+---
+
+## HSL+ and HSV+
+The cosel selector supports two non-standard color models: HSL+ and HSV+. They are not enabled by default.
+
+#### HSL+
+The HSL+ sliders work much like conventional HSL sliders but give a consistent perceptual brightness level at all hue and saturation levels.
+
+##### Detailed Description
+The 'L' slider specifies an exact luminance that matches 'L' in CIE LAB/LUV. This allows selection of colors with exact contrast. For example a color used for a background with L 15 and a color used for a foreground with L 68 will have the same perceptual contrast regardless of the hue or saturation. 
+
+Pure colors have a limited luminance. To accommodate this fact, the S level ranges from gray at zero to the most saturation that the specified hue can achieve at the specified L. Just as with HSL, when L is full (100), the only color that can be selected is white.
+
+None of the HSL+ slider values are consistent with conventional HSL.
+
+
+#### HSV+
+The HSV+ sliders work much like conventional HSV sliders but give a more consistent perceptual saturation level for different hues.
+
+##### Detailed Description
+In conventional HSV the 'S' slider determines a direct percentage of gray in the final RGB color. The visible level of saturation varies depending on the selected hue. For example, blue looks less saturated than green at the same S value. 
+
+In HSV+ the 'H' and 'V' sliders are compatible with HSV, but the 'S' slider determines the amount of white using the CIE LUV color model. This gives it a better consistency for all hues.
+
+
+
+
 
 
 
