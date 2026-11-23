@@ -38,7 +38,7 @@ class mouse_block_widget : public QWidget {
 public:
     mouse_block_widget() {
         setWindowFlags(Qt::Tool | Qt::FramelessWindowHint | Qt::WindowStaysOnTopHint |
-                       Qt::WindowDoesNotAcceptFocus);
+                       Qt::WindowDoesNotAcceptFocus| Qt::BypassWindowManagerHint);
         setAttribute(Qt::WA_ShowWithoutActivating);
         setWindowOpacity(0.01);
         setFixedSize(block_widget_size, block_widget_size);
@@ -92,7 +92,7 @@ private:
     // Passed to ctor so this class can stop the event loop
     QEventLoop* event_loop = nullptr;
     // Current selection
-    QColor selection_ = QColor(0,0,0);
+    QColor selection_ = QColor(0, 0, 0);
     // Rectamgle of specified container widget
     QRect container_rect;
     // Swatch and other display area
@@ -124,7 +124,8 @@ inline screen_picker_overlay::screen_picker_overlay(QEventLoop* event_loop_, QWi
 
     screen_origin = screen->geometry().topLeft();
     screen_shot = screen->grabWindow(0).toImage();
-    setWindowFlags(Qt::FramelessWindowHint | Qt::WindowStaysOnTopHint | Qt::Window);
+    setWindowFlags(Qt::FramelessWindowHint | Qt::WindowStaysOnTopHint | Qt::Window|
+                   Qt::BypassWindowManagerHint);
     setWindowModality(Qt::ApplicationModal);
     setAttribute(Qt::WA_TranslucentBackground, false);
     setMouseTracking(true);
@@ -196,8 +197,9 @@ inline void screen_picker_overlay::paintEvent([[maybe_unused]] QPaintEvent* even
                tr("Click screen to select color\nPress Esc to cancel"));
 
     auto color = selection_;
+
     if(!color.isValid()) {
-        color = QColor(0,0,0);
+        color = QColor(0, 0, 0);
     }
 
     const auto swatch_x = work_rect.center().x() - swatch_size.width() / 2;
@@ -265,11 +267,11 @@ inline void screen_picker_overlay::mousePressEvent(QMouseEvent* e) {
     if(e->button() == Qt::LeftButton) {
         const auto click_pos = QCursor::pos();
         blocker.reset();
-        
+
         QTimer::singleShot(20, [this, click_pos]() {
             selection_ = sample_at(click_pos);
             stop();
-            });
+        });
     }
 }
 
