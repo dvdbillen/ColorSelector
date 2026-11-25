@@ -14,6 +14,9 @@ Cosel is color-science aware, allowing for greater functionality than purely RGB
 ##### No corner rounding and advanced edit tab
 <img width="802" height="567" alt="Screenshot 2026-11-23 085535" src="https://github.com/user-attachments/assets/ddd33c08-04cb-4240-97ca-6d47c6ed95fa" />
 
+#### Just HSV sliders
+<img width="802" height="518" alt="Screenshot 2026-11-25 053142" src="https://github.com/user-attachments/assets/1ecaf4ac-c310-446f-9c9a-4d557578abde" />
+
 ### Features
 
 - All `QColorDialog` features (screen picker, custom palette, HTML entry, etc.)
