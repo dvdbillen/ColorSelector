@@ -8,7 +8,7 @@ Cosel is color-science aware, allowing for greater functionality than purely RGB
 ##### Default look with dark style
 <img width="802" height="582" alt="Screenshot 2026-11-23 084529" src="https://github.com/user-attachments/assets/2c52a93c-0792-4348-a0fd-060e862e206d" />
 
-##### Add full corner rounding and alpha selector using light style
+##### Add full corner rounding and alpha selector shown using light theme
 <img width="913" height="693" alt="Screenshot 2026-11-23 085225" src="https://github.com/user-attachments/assets/8652afba-a0c6-4335-837f-2bc0cb8fa957" />
 
 ##### No corner rounding and advanced edit tab
