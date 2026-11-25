@@ -642,7 +642,7 @@ private:
             return rgb(luminance, luminance, luminance);
         }
 
-        // The reverse of angle_to_hue supporting the contrived primary and secondary positions
+        // The reverse of angle_to_hue
         const auto angle = luvinfo.hue_to_angle(h());
 
         // Get an RGB in the darker full gamut range (via LUV). Using the dark level lets us get a
