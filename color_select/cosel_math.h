@@ -17,7 +17,7 @@ namespace cosel {
 
 constexpr double zero_epsilon = 5e-6;
 
-// C++17 comptible test for floating point template type
+// C++17 compatible test for floating point template type
 template<class T> constexpr inline void check_float() {
     static_assert(std::is_floating_point<T>(),
                   "Arguments must be floating point");

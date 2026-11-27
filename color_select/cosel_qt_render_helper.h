@@ -109,10 +109,9 @@ inline static void top_line_to_all_lines(QImage& image, int offset, int height, 
 
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-// Render a pointer for a gradient slider. The specified widget is used to access the pixel ratio.
+// Render a pointer for a gradient slider. The dpr argument is the destination widget pixel ratio
 
-inline static QPixmap render_pointer(QWidget* widget, const QRect* kr, bool pointer_top) {
-    const auto dpr = widget->devicePixelRatioF();
+inline static QPixmap render_pointer(double dpr, const QRect* kr, bool pointer_top) {
     const auto kr_sizef = QSizeF(kr->size().width()*dpr, kr->size().height()*dpr);
     const auto pointer_scaled = round(kr_sizef);
     const auto pointer_size = QSize(pointer_scaled.width()*2, pointer_scaled.height()*2);
@@ -161,7 +160,7 @@ inline static QPixmap render_pointer(QWidget* widget, const QRect* kr, bool poin
     image = image.scaled(pointer_size.width()/2, pointer_size.height()/2,
                          Qt::IgnoreAspectRatio, Qt::SmoothTransformation);
     auto pixmap = QPixmap::fromImage(image);
-    pixmap.setDevicePixelRatio(widget->devicePixelRatioF());
+    pixmap.setDevicePixelRatio(dpr);
     return pixmap;
 }
 

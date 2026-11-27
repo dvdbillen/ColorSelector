@@ -290,7 +290,7 @@ inline void alpha_slider::slider_painter(QPainter* p, [[maybe_unused]] const QRe
     }
 
     if(pointer_pixmap.isNull() || devicePixelRatioF() != pointer_dpr) {
-        pointer_pixmap = render_pointer(this, kr, options.pointer_top);
+        pointer_pixmap = render_pointer(devicePixelRatioF(), kr, options.pointer_top);
         pointer_dpr = pointer_pixmap.devicePixelRatioF();
     }
 
